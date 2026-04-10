@@ -1,36 +1,94 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mening Do'konim</title>
+    <title>Omad Savdo Do'koni</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); margin: 0; padding: 20px; }
-        .card { background: #fff; border-radius: 10px; padding: 15px; margin-bottom: 15px; color: #000; text-align: center; }
-        .card img { max-width: 100%; border-radius: 5px; }
-        .btn { background: #3390ec; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            width: 45%;
+            margin-bottom: 15px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .product-card img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        .product-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin: 8px 0;
+            color: #333;
+        }
+        .product-price {
+            color: #7f00ff;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .add-btn {
+            background-color: #7f00ff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+        .add-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
-    <div id="main">
-        <h2>Katalog</h2>
-        <div class="card">
-            <img src="https://via.placeholder.com/150" alt="Mahsulot">
-            <h3>Futbolka</h3>
-            <p>150,000 so'm</p>
-            <button class="btn" onclick="order('Futbolka')">Sotib olish</button>
-        </div>
+
+    <div class="product-card">
+        <img src="https://picsum.photos/200/200?random=1" alt="Mahsulot">
+        <div class="product-title">Smartfon S24</div>
+        <div class="product-price">12,000,000 so'm</div>
+        <button class="add-btn" onclick="sendOrder('Smartfon S24', '12 mln')">Savatga</button>
+    </div>
+
+    <div class="product-card">
+        <img src="https://picsum.photos/200/200?random=2" alt="Mahsulot">
+        <div class="product-title">Simsiz quloqchin</div>
+        <div class="product-price">350,000 so'm</div>
+        <button class="add-btn" onclick="sendOrder('Quloqchin', '350 ming')">Savatga</button>
+    </div>
+
+    <div class="product-card">
+        <img src="https://picsum.photos/200/200?random=3" alt="Mahsulot">
+        <div class="product-title">Aqlli soat</div>
+        <div class="product-price">800,000 so'm</div>
+        <button class="add-btn" onclick="sendOrder('Aqlli soat', '800 ming')">Savatga</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Oynani to'liq ekranga yoyish
+        tg.expand(); // Do'konni to'liq ekranda ochish
 
-        function order(name) {
-            // Botga ma'lumot yuborish
-            tg.sendData("Buyurtma: " + name);
-            tg.close(); // Ma'lumot yuborgach oynani yopish
+        function sendOrder(item, price) {
+            // Tanlangan mahsulot haqida botga ma'lumot yuborish
+            let data = {
+                product: item,
+                price: price
+            };
+            tg.sendData(JSON.stringify(data));
         }
     </script>
 </body>
