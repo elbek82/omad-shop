@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mening Do'konim</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); margin: 0; padding: 20px; }
+        .card { background: #fff; border-radius: 10px; padding: 15px; margin-bottom: 15px; color: #000; text-align: center; }
+        .card img { max-width: 100%; border-radius: 5px; }
+        .btn { background: #3390ec; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <h2>Katalog</h2>
+        <div class="card">
+            <img src="https://via.placeholder.com/150" alt="Mahsulot">
+            <h3>Futbolka</h3>
+            <p>150,000 so'm</p>
+            <button class="btn" onclick="order('Futbolka')">Sotib olish</button>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Oynani to'liq ekranga yoyish
+
+        function order(name) {
+            // Botga ma'lumot yuborish
+            tg.sendData("Buyurtma: " + name);
+            tg.close(); // Ma'lumot yuborgach oynani yopish
+        }
+    </script>
+</body>
+</html>
