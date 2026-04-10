@@ -1,95 +1,253 @@
-<!DOCTYPE html>
+[11.04.2026 0:38] Elbek Niyozov: <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omad Savdo Do'koni</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Omad Savdo</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --main-color: #7000ff; /* Uzum binafsha */
+            --bg-color: #f2f4f7;
+            --text-color: #1f2026;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
             margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .search-bar {
+            background: #edeff2;
+            border-radius: 10px;
             padding: 10px;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
+            align-items: center;
         }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            overflow-x: auto;
+            padding: 15px;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .cat-item {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Grid System */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 10px;
+        }
+
         .product-card {
             background: white;
-            border-radius: 15px;
-            width: 45%;
-            margin-bottom: 15px;
-            padding: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-align: center;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
-        .product-card img {
+
+        .product-image {
             width: 100%;
-            border-radius: 10px;
+            aspect-ratio: 3/4;
+            object-fit: cover;
         }
+
+        .product-info {
+            padding: 10px;
+            flex-grow: 1;
+        }
+
         .product-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin: 8px 0;
-            color: #333;
+            font-size: 13px;
+            line-height: 1.4;
+            height: 38px;
+            overflow: hidden;
+            margin-bottom: 5px;
         }
+
         .product-price {
-            color: #7f00ff;
             font-weight: bold;
             font-size: 16px;
-            margin-bottom: 10px;
+            color: var(--text-color);
         }
-        .add-btn {
-            background-color: #7f00ff;
+
+        .old-price {
+            font-size: 11px;
+            text-decoration: line-through;
+            color: #9ea1a7;
+        }
+
+        .add-to-cart {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: white;
+            border: 1px solid #e2e5eb;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--main-color);
+            transition: 0.2s;
+        }
+
+        .add-to-cart:active {
+            background: var(--main-color);
             color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
         }
-        .add-btn:active {
-            transform: scale(0.95);
+
+        /* Bottom Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #e2e5eb;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            color: #9ea1a7;
+        }
+
+        .nav-item.active {
+            color: var(--main-color);
+        }
+
+        .badge {
+            background: #ff3b30;
+[11.04.2026 0:38] Elbek Niyozov: color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+            position: absolute;
+            top: 5px;
         }
     </style>
 </head>
 <body>
 
-    <div class="product-card">
-        <img src="https://picsum.photos/200/200?random=1" alt="Mahsulot">
-        <div class="product-title">Smartfon S24</div>
-        <div class="product-price">12,000,000 so'm</div>
-        <button class="add-btn" onclick="sendOrder('Smartfon S24', '12 mln')">Savatga</button>
+    <header>
+        <div class="search-bar">
+            <i class="fa fa-search" style="color: #9ea1a7;"></i>
+            <input type="text" placeholder="Mahsulotlarni qidirish...">
+        </div>
+    </header>
+
+    <div class="categories">
+        <div class="cat-item">Barchasi</div>
+        <div class="cat-item">Elektronika</div>
+        <div class="cat-item">Kiyimlar</div>
+        <div class="cat-item">Aksessuarlar</div>
     </div>
 
-    <div class="product-card">
-        <img src="https://picsum.photos/200/200?random=2" alt="Mahsulot">
-        <div class="product-title">Simsiz quloqchin</div>
-        <div class="product-price">350,000 so'm</div>
-        <button class="add-btn" onclick="sendOrder('Quloqchin', '350 ming')">Savatga</button>
-    </div>
+    <div class="product-grid" id="product-list">
+        </div>
 
-    <div class="product-card">
-        <img src="https://picsum.photos/200/200?random=3" alt="Mahsulot">
-        <div class="product-title">Aqlli soat</div>
-        <div class="product-price">800,000 so'm</div>
-        <button class="add-btn" onclick="sendOrder('Aqlli soat', '800 ming')">Savatga</button>
+    <div class="bottom-nav">
+        <div class="nav-item active"><i class="fa fa-home fa-lg"></i><br>Asosiy</div>
+        <div class="nav-item"><i class="fa fa-heart fa-lg"></i><br>Saralangan</div>
+        <div class="nav-item" onclick="showCart()" style="position: relative;">
+            <i class="fa fa-shopping-cart fa-lg"></i><span class="badge" id="cart-count">0</span><br>Savatcha
+        </div>
+        <div class="nav-item"><i class="fa fa-user fa-lg"></i><br>Profil</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Do'konni to'liq ekranda ochish
+        tg.expand();
+        tg.MainButton.setText("BUYURTMANI RASMIYLASHTIRISH");
+        tg.MainButton.setParams({color: '#7000ff'});
 
-        function sendOrder(item, price) {
-            // Tanlangan mahsulot haqida botga ma'lumot yuborish
-            let data = {
-                product: item,
-                price: price
-            };
-            tg.sendData(JSON.stringify(data));
+        const products = [
+            { id: 1, name: "iPhone 15 Pro Max, 256 GB, Natural Titanium", price: 15400000, oldPrice: 17000000, img: "https://images.unsplash.com/photo-1696446701796-da61225697cc?w=400" },
+            { id: 2, name: "AirPods Pro (2nd generation) bilan MagSafe Case", price: 2900000, oldPrice: 3500000, img: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=400" },
+            { id: 3, name: "Apple Watch Series 9, 45mm Aluminum", price: 5600000, oldPrice: 6200000, img: "https://images.unsplash.com/photo-1546868871-70ca48370732?w=400" },
+            { id: 4, name: "MacBook Air 13-inch, M2 chip", price: 12800000, oldPrice: 14000000, img: "https://images.unsplash.com/photo-1611186871348-b1ec696e52c9?w=400" }
+        ];
+
+        let cart = [];
+
+        function renderProducts() {
+            const list = document.getElementById('product-list');
+            list.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <img src="${p.img}" class="product-image">
+                    <div class="product-info">
+                        <div class="product-title">${p.name}</div>
+                        <div class="old-price">${p.oldPrice.toLocaleString()} so'm</div>
+                        <div class="product-price">${p.price.toLocaleString()} so'm</div>
+                    </div>
+                    <div class="add-to-cart" onclick="addToCart(${p.id})">
+                        <i class="fa fa-plus"></i>
+                    </div>
+                </div>
+            `).join('');
         }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            document.getElementById('cart-count').innerText = cart.length;
+            
+            if (!tg.MainButton.isVisible) {
+                tg.MainButton.show();
+            }
+            
+            // Tugmacha bosilganda tebranish (Haptic Feedback)
+            tg.HapticFeedback.impactOccurred('medium');
+        }
+
+        // Telegram MainButton bosilganda
+        tg.onEvent('mainButtonClicked', function() {
+            tg.sendData(JSON.stringify(cart));
+        });
+
+        renderProducts();
     </script>
 </body>
 </html>
