@@ -138,23 +138,25 @@ async def parse_product(url):
     return None
 
 # ------------------ BOT ------------------
-@dp.message(CommandStart())
-async def start(message: types.Message):
-    await message.answer("Send product link (Uzum, Amazon, etc)")
-
-
-@dp.message(F.from_user.id == ADMIN_ID)
+@dp.message()
 async def handle_link(message: types.Message):
-    if not message.text.startswith("http"):
+    print("📩 KELGAN XABAR:", message.text)
+    print("👤 USER ID:", message.from_user.id)
+
+    await message.answer("⏳ Ishlayapman...")
+
+    url = message.text.strip()
+
+    if "http" not in url:
+        await message.answer("❌ Bu link emas")
         return
 
-    wait = await message.answer("⏳ Loading...")
-
     try:
-        info = await parse_product(message.text)
+        info = await parse_product(url)
+        print("📦 PARSED INFO:", info)
 
         if not info or not info.get("name"):
-            await wait.edit_text("❌ Could not parse this site")
+            await message.answer("❌ Parse bo‘lmadi")
             return
 
         products = await load_products()
@@ -169,22 +171,23 @@ async def handle_link(message: types.Message):
         products.append(product)
         await save_products(products)
 
+        print("💾 SAQLANDI")
+
         img_bytes = await download_image(product["img"]) if product.get("img") else None
 
         if img_bytes:
             await message.answer_photo(
                 photo=img_bytes,
-                caption=f"✅ Added\n\n{product['name']}\n💰 {product['price']}"
+                caption=f"✅ Qo‘shildi!\n\n{product['name']}\n💰 {product['price']}"
             )
         else:
             await message.answer(
-                f"✅ Added (no image)\n\n{product['name']}\n💰 {product['price']}"
+                f"✅ Qo‘shildi (rasmsiz)\n\n{product['name']}\n💰 {product['price']}"
             )
 
-        await wait.delete()
-
     except Exception as e:
-        await wait.edit_text(f"❌ Error: {e}")
+        print("❌ ERROR:", e)
+        await message.answer(f"❌ Xato: {e}")
 
 # ------------------ API ------------------
 async def handle_api(request):
