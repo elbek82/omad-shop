@@ -203,7 +203,43 @@ async def handle_link(message: types.Message):
 async def ignore_others(message: types.Message):
     # Mijoz nimadir yozsa bot indamaydi, faqat knopka turadi
     pass
-
+# ===== YANGI: BUYURTMALARNI QABUL QILISH =====
+@dp.message_handler(content_types=['web_app_data'])
+async def web_app_data_handler(message: types.Message):
+    try:
+        # Web App dan kelgan JSON ma'lumotni o'qiymiz
+        data = json.loads(message.web_app_data.data)
+        
+        if data.get('action') == 'new_order':
+            phone = data.get('phone')
+            address = data.get('address')
+            items = data.get('items', [])
+            
+            # Adminga (Sizga) boradigan chek
+            text = f"🆕 YANGI BUYURTMA!\n\n"
+            text += f"👤 Mijoz: {message.from_user.full_name} (@{message.from_user.username})\n"
+            text += f"📞 Tel: {phone}\n"
+            text += f"📍 Manzil: {address}\n\n"
+            text += "🛍 Sotib olindi:\n"
+            
+            total = 0
+            for item in items:
+                text += f"▫️ {item['name']} x1 ({item['price']:,} so'm)\n"
+                total += int(item['price'])
+                
+            text += f"\n💰 Jami to'lov: {total:,} so'm"
+            
+            # Sizga (Adminga) xabar yuborish
+            await bot.send_message(ADMIN_ID, text)
+            
+            # Mijozning o'ziga tasdiq xabari yuborish
+            if message.from_user.id != ADMIN_ID:
+                await message.reply(f"✅ Buyurtmangiz qabul qilindi!\nTez orada {phone} raqamiga aloqaga chiqamiz.")
+            else:
+                await message.reply("✅ Test buyurtma: O'zingizga o'zingiz buyurtma berdingiz!")
+                
+    except Exception as e:
+        print(f"Buyurtma qabul qilishda xato: {e}")
 # ========== API VA SERVER QISMI ==========
 async def handle_api(request):
     products = load_products()
