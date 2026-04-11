@@ -101,7 +101,7 @@ async def main():
     app = web.Application()
     app.router.add_get("/api/products", handle_api)
     app.router.add_get("/", lambda r: web.Respons
-[11.04.2026 10:49] Elbek Niyozov: e(text="Bot is running!"))
+    e(text="Bot is running!"))
     runner = web.AppRunner(app)
     await runner.setup()
     port = int(os.environ.get("PORT", 10000))
