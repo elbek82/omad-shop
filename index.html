@@ -44,9 +44,9 @@
                 <div class="cat-icon w-14 h-14 rounded-full bg-yellow-100 flex items-center justify-center text-main-yellow text-2xl mb-1 shadow-sm transition-colors"><i class="fa-solid fa-border-all"></i></div>
                 <span class="text-xs font-medium text-center">Barchasi</span>
             </div>
-            <div class="category-btn flex flex-col items-center gap-1 min-w-[70px] cursor-pointer" onclick="filterCategory('Pult g\\'ilof', this)">
+            <div class="category-btn flex flex-col items-center gap-1 min-w-[70px] cursor-pointer" onclick="filterCategory('Giloflar', this)">
                 <div class="cat-icon w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm transition-colors"><i class="fa-solid fa-key"></i></div>
-                <span class="text-xs font-medium text-center">Pult g'ilof</span>
+                <span class="text-xs font-medium text-center">G'iloflar</span>
             </div>
             <div class="category-btn flex flex-col items-center gap-1 min-w-[70px] cursor-pointer" onclick="filterCategory('Tozalash', this)">
                 <div class="cat-icon w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm transition-colors"><i class="fa-solid fa-pump-soap"></i></div>
@@ -56,17 +56,13 @@
                 <div class="cat-icon w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm transition-colors"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <span class="text-xs font-medium text-center">Xavfsizlik</span>
             </div>
-            <div class="category-btn flex flex-col items-center gap-1 min-w-[70px] cursor-pointer" onclick="filterCategory('Asboblar', this)">
-                <div class="cat-icon w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm transition-colors"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                <span class="text-xs font-medium text-center">Asboblar</span>
-            </div>
         </div>
     </div>
 
     <div class="px-4 mt-4">
         <h3 id="gridTitle" class="font-bold text-lg mb-3">Ommabop mahsulotlar</h3>
         <div id="products-grid" class="grid grid-cols-2 gap-3">
-            <p class="col-span-2 text-center text-gray-400 my-10"><i class="fas fa-spinner fa-spin text-3xl"></i><br>Yuklanmoqda...</p>
+            <p class="col-span-2 text-center text-gray-400 my-10">Yuklanmoqda...</p>
         </div>
     </div>
 
@@ -110,7 +106,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1">Yetkazib berish manzili <span class="text-red-500">*</span></label>
-                    <textarea id="custAddress" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-main-yellow text-sm" placeholder="Viloyat, shahar, ko'cha, uy raqami..."></textarea>
+                    <textarea id="custAddress" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-main-yellow text-sm" placeholder="Viloyat, shahar, ko'cha..."></textarea>
                 </div>
                 
                 <div class="bg-gray-100 p-4 rounded-xl mt-4">
@@ -128,20 +124,17 @@
         <button onclick="filterCategory('Barchasi', document.querySelector('.category-btn'))" class="flex flex-col items-center gap-1 text-main-black w-16 transition-colors">
             <i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Asosiy</span>
         </button>
-        
         <button onclick="showFavoritesOnly()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
             <i class="fa-solid fa-heart text-xl"></i><span class="text-[10px] font-bold">Sevimlilar</span>
         </button>
-        
         <button onclick="openCheckout()" class="relative flex flex-col items-center justify-center w-14 h-14 -mt-6 bg-main-yellow text-main-black rounded-full shadow-lg border-4 border-[#f6f7f9] transform active:scale-95">
             <i class="fa-solid fa-cart-shopping text-xl"></i>
             <div id="cartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex justify-center items-center rounded-full hidden">0</div>
         </button>
-        
-        <button onclick="showOrders()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
+        <button onclick="showOrdersHistory()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
             <i class="fa-solid fa-box text-xl"></i><span class="text-[10px] font-bold">Buyurtma</span>
         </button>
-        <button onclick="showProfile()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
+        <button onclick="showProfileInfo()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
             <i class="fa-solid fa-user text-xl"></i><span class="text-[10px] font-bold">Profil</span>
         </button>
     </div>
@@ -153,7 +146,7 @@
 
         let allProducts = [];
         let cart = [];
-        let favorites = []; 
+        let favorites = JSON.parse(localStorage.getItem('avto_favs') || '[]'); 
         let currentProduct = null;
 
         const API_URL = 'https://omad-shop-1.onrender.com/api/products'; 
@@ -169,9 +162,7 @@
             }
         }
 
-        // Kategoriya Filtr va Rang o'zgarishi
         function filterCategory(categoryName, element = null) {
-            // Rangi o'zgarishi
             if(element) {
                 document.querySelectorAll('.cat-icon').forEach(el => {
                     el.classList.remove('bg-yellow-100', 'text-main-yellow');
@@ -184,7 +175,6 @@
                 }
             }
 
-            // Mantiq
             if(categoryName === 'Barchasi') {
                 document.getElementById('gridTitle').innerText = "Ommabop mahsulotlar";
                 renderProducts(allProducts);
@@ -201,10 +191,12 @@
             if(favorites.includes(id)) { favorites = favorites.filter(favId => favId !== id); } 
             else { favorites.push(id); if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); }
             
+            localStorage.setItem('avto_favs', JSON.stringify(favorites)); // Sevimlilarni xotiraga yozish
+            
             const currentTitle = document.getElementById('gridTitle').innerText;
             if(currentTitle === "Ommabop mahsulotlar" || currentTitle === "Barchasi") renderProducts(allProducts);
             else if (currentTitle === "Sevimlilar") showFavoritesOnly();
-            else filterCategory(currentTitle); // o'z guruhida yangilash
+            else filterCategory(currentTitle); 
         }
 
         function renderProducts(products) {
@@ -238,7 +230,6 @@
             `}).join('');
         }
 
-        // Modal funksiyalar
         function openModal(id) {
             currentProduct = allProducts.find(p => p.id === id);
             if (!currentProduct) return;
@@ -272,19 +263,13 @@
 
         function toggleModalFavorite() {
             if(!currentProduct) return;
+            toggleFav(currentProduct.id, {stopPropagation: () => {}});
+            
             const heartBtn = document.getElementById('modalHeartBtn');
-            if(favorites.includes(currentProduct.id)) {
-                favorites = favorites.filter(id => id !== currentProduct.id);
-                heartBtn.className = "fa-regular fa-heart transition-colors";
-            } else {
-                favorites.push(currentProduct.id);
-                heartBtn.className = "fa-solid fa-heart text-red-500 transition-colors";
-                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-            }
-            renderProducts(allProducts);
+            if(favorites.includes(currentProduct.id)) heartBtn.className = "fa-solid fa-heart text-red-500 transition-colors";
+            else heartBtn.className = "fa-regular fa-heart transition-colors";
         }
 
-        // Karzinka va Buyurtma (Checkout)
         function addToCartFromModal() {
             if(currentProduct) {
                 cart.push(currentProduct);
@@ -327,6 +312,7 @@
             }, 300);
         }
 
+        // ====== YANGI: BUYURTMANI VA TARIXNI SAQLASH ======
         function submitOrder() {
             const phone = document.getElementById('custPhone').value;
             const address = document.getElementById('custAddress').value;
@@ -335,20 +321,54 @@
                 tg.showAlert("Iltimos, telefon raqam va manzilni to'liq kiriting!");
                 return;
             }
+
+            // 1. Ma'lumotlarni Telegram botga yuborish
             let orderData = { action: 'new_order', phone: phone, address: address, items: cart };
             tg.sendData(JSON.stringify(orderData));
+
+            // 2. Buyurtmani telefon xotirasiga (Tarixga) saqlash
+            let myOrders = JSON.parse(localStorage.getItem('avto_orders') || '[]');
+            let total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+            
+            let currentOrder = {
+                date: new Date().toLocaleDateString('uz-UZ') + " " + new Date().toLocaleTimeString('uz-UZ'),
+                total: total,
+                count: cart.length
+            };
+            myOrders.push(currentOrder);
+            localStorage.setItem('avto_orders', JSON.stringify(myOrders));
+
+            // 3. Ilovani yopish
             tg.close();
         }
 
-        // Yangi bo'limlar funksiyalari (Buyurtma va Profil)
-        function showOrders() {
-            tg.showAlert("📦 Buyurtmalar tarixi bo'limi tayyorlanmoqda.\n\nHozircha xaridlarni asosiy menyudan amalga oshirishingiz mumkin!");
+        // ====== YANGI: BUYURTMA TARIXI VA PROFIL ======
+        function showOrdersHistory() {
+            let myOrders = JSON.parse(localStorage.getItem('avto_orders') || '[]');
+            if(myOrders.length === 0) {
+                tg.showAlert("Sizda hali buyurtmalar yo'q. Birinchi xaridingizni amalga oshiring!");
+            } else {
+                let historyText = "Sizning buyurtmalaringiz:\n\n";
+                // Oxirgi 5 ta buyurtmani ko'rsatish
+                myOrders.slice(-5).reverse().forEach((order, index) => {
+                    historyText += `${index + 1}. Sana: ${order.date}\n🛍 ${order.count} ta mahsulot\n💰 Summa: ${order.total.toLocaleString()} so'm\n\n`;
+                });
+                tg.showAlert(historyText);
+            }
         }
 
-        function showProfile() {
+        function showProfileInfo() {
             let user = tg.initDataUnsafe?.user;
             let name = user ? user.first_name : "Hurmatli mijoz";
-            tg.showAlert(`👤 Profil: ${name}\n\nSizning shaxsiy kabinetingiz, saqlangan manzillaringiz va chegirmalaringiz tez orada shu yerda ko'rinadi.`);
+            let myOrders = JSON.parse(localStorage.getItem('avto_orders') || '[]');
+            let favsCount = favorites.length;
+            
+            let profileText = `👤 Profil: ${name}\n\n`;
+            profileText += `📊 Umumiy buyurtmalar: ${myOrders.length} marta\n`;
+            profileText += `❤️ Saqlangan mahsulotlar: ${favsCount} ta\n\n`;
+            profileText += `AVTO 6707 ni tanlaganingiz uchun rahmat!`;
+            
+            tg.showAlert(profileText);
         }
 
         function searchProducts() {
