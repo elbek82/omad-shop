@@ -99,7 +99,12 @@ async def parse_universal(url, shop_type):
 async def start(message: types.Message):
     button = KeyboardButton("🛒 Do'konni ochish", web_app=WebAppInfo(url=WEB_APP_URL))
     markup = ReplyKeyboardMarkup(resize_keyboard=True).add(button)
-    await message.reply("Assalomu alaykum! AVTO 6707 do'koniga xush kelibsiz.\nUzum, Ozon yoki Wildberries linkini yuboring.", reply_markup=markup)
+    
+    # MUHIM O'ZGARISH: Mijozga boshqa, Adminga boshqa xabar ketadi!
+    if message.from_user.id == ADMIN_ID:
+        await message.reply("👨‍💻 Assalomu alaykum, Admin!\n\nDo'kon boshqaruviga xush kelibsiz. Mahsulot qo'shish uchun ssilkani yuboring.", reply_markup=markup)
+    else:
+        await message.reply("👋 Assalomu alaykum! AVTO 6707 onlayn do'koniga xush kelibsiz!\n\n🚗 Avtomobilingiz uchun eng sifatli aksessuarlar va jihozlar aynan bizda.\n\n👇 Xaridni boshlash uchun pastdagi «🛒 Do'konni ochish» tugmasini bosing!", reply_markup=markup)
 
 @dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('/narx'))
 async def update_price(message: types.Message):
@@ -186,11 +191,18 @@ async def handle_link(message: types.Message):
         products.append(new_product)
         save_products(products)
         
-        caption = f"✅ Qo‘shildi!\n🆔 ID: {new_id}\n🛍 {new_product['name']}\n\nO'zgartirish uchun:\n/narx {new_id} SUMMA\n/nom {new_id} NOM\n/kat {new_id} KATEGORIYA"
+        # TAVSIF BU YERGA QO'SHILDI
+        caption = f"✅ Qo‘shildi!\n🆔 ID: {new_id}\n🛍 {new_product['name']}\n\nO'zgartirish uchun:\n/narx {new_id} SUMMA\n/nom {new_id} NOM\n/tavsif {new_id} TAVSIF MATNI\n/kat {new_id} KATEGORIYA"
         
         if new_product['img']: await message.reply_photo(photo=new_product['img'], caption=caption)
         else: await message.reply(caption)
         await wait_msg.delete()
+
+# Faqat mijozlarning adashib yozgan xabarlari uchun
+@dp.message_handler(lambda msg: msg.from_user.id != ADMIN_ID)
+async def ignore_others(message: types.Message):
+    # Mijoz nimadir yozsa bot indamaydi, faqat knopka turadi
+    pass
 
 # ========== API VA SERVER QISMI ==========
 async def handle_api(request):
@@ -209,10 +221,8 @@ async def run_api():
     port = int(os.environ.get("PORT", 10000))
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
-    print(f"✅ Server {port}-portda ishlayapti")
     await asyncio.Event().wait()
 
-# TUSHIB QOLGAN ENG MUHIM JOY MANA SHU EDI:
 async def main():
     asyncio.create_task(run_api())
     await dp.start_polling()
