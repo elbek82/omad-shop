@@ -1,4 +1,3 @@
-[11.04.2026 10:49] Elbek Niyozov: import os
 import json
 import asyncio
 import requests
