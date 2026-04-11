@@ -12,7 +12,7 @@ from aiogram.utils import executor
 
 # ========== SOZLAMALAR ==========
 # DIQQAT: Githubingiz "Private" bo'lishi shart, yo'qsa token yana o'chib ketadi!
-BOT_TOKEN = "SIZNING_YANGI_TOKENINGIZ" # Shu yerga aniq tokeningizni yozing
+BOT_TOKEN = "8353606263:AAFOZDP1AyIUpMzHyJ_rgLb1BK49T7vUkzk" # Shu yerga aniq tokeningizni yozing
 ADMIN_ID = 797324958   # O'z ID raqamingiz
 WEB_APP_URL = "https://omad-shop.vercel.app"   # VERCEL do'kon manzili
 DATA_FILE = "products.json"
