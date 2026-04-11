@@ -210,7 +210,21 @@
             { id: 4, name: "MacBook Air 13-inch, M2 chip", price: 12800000, oldPrice: 14000000, img: "https://images.unsplash.com/photo-1611186871348-b1ec696e52c9?w=400" }
         ];
 
-        let cart = [];
+        let products = [];
+
+async function fetchProducts() {
+    try {
+        // Mana shu link botingizdan ma'lumotni oladi
+        const response = await fetch('https://omad-shop-1.onrender.com/api/products');
+        products = await response.json();
+        renderProducts(); // Ma'lumot kelgach, ekranga chiqaradi
+    } catch (error) {
+        console.error("Xatolik yuz berdi:", error);
+    }
+}
+
+// Sahifa ochilishi bilan ma'lumotlarni yuklashni boshlaydi
+fetchProducts();
 
         function renderProducts() {
             const list = document.getElementById('product-list');
