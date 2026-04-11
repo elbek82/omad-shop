@@ -10,10 +10,9 @@ from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from aiogram.utils import executor
 
-# ========== SOZLAMALAR ==========
 BOT_TOKEN = os.environ.get("BOT_TOKEN") 
-ADMIN_ID = 797324958   # O'z ID raqamingiz
-WEB_APP_URL = "https://omad-shop.vercel.app"   # VERCEL do'kon manzili
+ADMIN_ID = 797324958
+WEB_APP_URL = "https://omad-shop.vercel.app"
 DATA_FILE = "products.json"
 
 bot = Bot(token=BOT_TOKEN)
@@ -41,7 +40,6 @@ def check_url_type(url):
     if "market.yandex.ru" in url: return "yandex"
     return None
 
-# Katta tozalash funksiyasi
 def clean_text(text):
     if not text: return ""
     text = text.split(' - ')[0].split(' | ')[0].split(' – ')[0]
@@ -51,7 +49,6 @@ def clean_text(text):
         text = re.sub(word, "", text, flags=re.IGNORECASE)
     return re.sub(' +', ' ', text).strip()
 
-# ========== UNIVERSAL PARSER ==========
 async def parse_universal(url, shop_type):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -90,80 +87,85 @@ async def parse_universal(url, shop_type):
                         except: pass
                 
                 if name:
-                    if not desc: desc = f"AVTO 6707 do'koni maxsus taklifi."
+                    if not desc: desc = f"AVTO 6707 maxsus taklifi."
                     return {"name": name, "price": price, "img": img, "description": desc, "source": shop_type}
         except Exception as e:
-            print(f"Parse xatosi ({shop_type}): {e}")
+            print(f"Parse xato: {e}")
     return None
 
-# ========== BOT HANDLERLARI ==========
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     button = KeyboardButton("🛒 Do'konni ochish", web_app=WebAppInfo(url=WEB_APP_URL))
     markup = ReplyKeyboardMarkup(resize_keyboard=True).add(button)
-    await message.reply("Assalomu alaykum! AVTO 6707 do'koniga xush kelibsiz.\nUzum, Ozon, WB yoki Yandex ssilkasini yuboring.", reply_markup=markup)
+    await message.reply("Assalomu alaykum! AVTO 6707 do'koniga xush kelibsiz.\nLink yuboring.", reply_markup=markup)
 
-# 1. Narxni qo'lda o'zgartirish
 @dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('/narx'))
 async def update_price(message: types.Message):
     try:
         parts = message.text.split(maxsplit=2)
         product_id = int(parts[1])
         new_price = int(parts[2])
-        
         products = load_products()
         for p in products:
             if isinstance(p, dict) and p.get('id') == product_id:
                 p['price'] = new_price
                 save_products(products)
-                await message.reply(f"✅ {product_id}-raqamli mahsulot narxi {new_price:,} so'm etib belgilandi.")
+                await message.reply(f"✅ Narx {new_price:,} so'm bo'ldi.")
                 return
-        await message.reply("❌ Bunday ID topilmadi.")
-    except: await message.reply("❌ Xato. Format: /narx ID SUMMA")
+    except: await message.reply("❌ Xato: /narx ID SUMMA")
 
-# 2. Nomni qo'lda o'zgartirish
 @dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('/nom'))
 async def update_name(message: types.Message):
     try:
         parts = message.text.split(maxsplit=2)
         product_id = int(parts[1])
         new_name = parts[2]
-        
         products = load_products()
         for p in products:
             if isinstance(p, dict) and p.get('id') == product_id:
                 p['name'] = new_name
                 save_products(products)
-                await message.reply(f"✅ {product_id}-raqamli mahsulot nomi o'zgardi:\n{new_name}")
+                await message.reply(f"✅ Nom o'zgardi:\n{new_name}")
                 return
-        await message.reply("❌ Bunday ID topilmadi.")
-    except: await message.reply("❌ Xato. Format: /nom ID YANGI_NOM")
+    except: await message.reply("❌ Xato: /nom ID YANGI_NOM")
 
-# 3. Tavsifni qo'lda o'zgartirish
 @dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('/tavsif'))
 async def update_desc(message: types.Message):
     try:
         parts = message.text.split(maxsplit=2)
         product_id = int(parts[1])
         new_desc = parts[2]
-        
         products = load_products()
         for p in products:
             if isinstance(p, dict) and p.get('id') == product_id:
                 p['description'] = new_desc
                 save_products(products)
-                await message.reply(f"✅ {product_id}-raqamli mahsulot tavsifi o'zgardi.")
+                await message.reply(f"✅ Tavsif o'zgardi.")
+                return
+    except: await message.reply("❌ Xato: /tavsif ID YANGI_MATN")
+
+# ===== YANGI KATEGORIYA BUYRUG'I =====
+@dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('/kat'))
+async def update_category(message: types.Message):
+    try:
+        parts = message.text.split(maxsplit=2)
+        product_id = int(parts[1])
+        new_cat = parts[2]
+        products = load_products()
+        for p in products:
+            if isinstance(p, dict) and p.get('id') == product_id:
+                p['category'] = new_cat
+                save_products(products)
+                await message.reply(f"✅ {product_id}-mahsulot kategoriyasi '{new_cat}' ga o'zgardi.")
                 return
         await message.reply("❌ Bunday ID topilmadi.")
-    except: await message.reply("❌ Xato. Format: /tavsif ID YANGI_MATN")
+    except: await message.reply("❌ Xato format. Misol: /kat 1 Asboblar")
 
 @dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('http'))
 async def handle_link(message: types.Message):
     url = message.text
     shop_type = check_url_type(url)
-    if not shop_type:
-        await message.reply("❌ Noto'g'ri ssilka!")
-        return
+    if not shop_type: return
         
     wait_msg = await message.reply(f"🔄 Yuklanmoqda...")
     info = await parse_universal(url, shop_type)
@@ -177,23 +179,18 @@ async def handle_link(message: types.Message):
             "price": info.get('price', 0),
             "img": info.get('img', ''),
             "description": info.get('description', ''),
-            "source": info.get('source', '')
+            "source": info.get('source', ''),
+            "category": "Boshqa" # <--- YANGI MAHSULOTLARGA BOSHIDA "Boshqa" DEB BERAMIZ
         }
         products.append(new_product)
         save_products(products)
         
-        if new_product['price'] > 0: narx_matni = f"{new_product['price']:,} so'm"
-        else: narx_matni = f"0 so'm ⚠️\n\n✏️ /narx {new_id} SUMMA"
-            
-        caption_text = f"✅ Qo‘shildi!\n🆔 ID: {new_id}\n\n🛍 {new_product['name']}\n💰 {narx_matni}\n\n✏️ Nomini o'zgartirish: /nom {new_id} Yangi ism\n📝 Tavsifni o'zgartirish: /tavsif {new_id} Yangi matn"
+        caption = f"✅ Qo‘shildi!\n🆔 ID: {new_id}\n🛍 {new_product['name']}\n\nO'zgartirish uchun:\n/narx {new_id} SUMMA\n/nom {new_id} NOM\n/kat {new_id} KATEGORIYA"
         
-        if new_product['img']: await message.reply_photo(photo=new_product['img'], caption=caption_text)
-        else: await message.reply(caption_text)
+        if new_product['img']: await message.reply_photo(photo=new_product['img'], caption=caption)
+        else: await message.reply(caption)
         await wait_msg.delete()
-    else:
-        await wait_msg.edit_text(f"❌ Ma'lumot olinmadi.")
 
-# ========== API SERVER ==========
 async def handle_api(request):
     products = load_products()
     return web.json_response(products, headers={'Access-Control-Allow-Origin': '*'})
@@ -210,12 +207,7 @@ async def run_api():
     port = int(os.environ.get("PORT", 10000))
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
-    print(f"✅ Server {port}-portda ishlayapti")
     await asyncio.Event().wait()
 
-async def main():
-    asyncio.create_task(run_api())
-    await dp.start_polling()
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(run_api())
