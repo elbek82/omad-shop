@@ -1,4 +1,4 @@
-aiogram
-aiohttp
-beautifulsoup4
-requests
+aiogram==3.4.1
+aiohttp==3.9.3
+beautifulsoup4==4.12.3
+aiofiles==23.2.1
