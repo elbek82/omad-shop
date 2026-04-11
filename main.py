@@ -20,10 +20,16 @@ bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(bot)
 dp.middleware.setup(LoggingMiddleware())
 
+# YANADA XAVFSIZ QILINGAN BAZA YUKLAGICH
 def load_products():
     if not os.path.exists(DATA_FILE): return []
     with open(DATA_FILE, 'r', encoding='utf-8') as f:
-        try: return json.load(f)
+        try: 
+            data = json.load(f)
+            # Agar fayl ichi buzilgan bo'lsa, uni tozalab yuboradi
+            if isinstance(data, list):
+                return [item for item in data if isinstance(item, dict)]
+            return []
         except: return []
 
 def save_products(data):
@@ -108,7 +114,8 @@ async def update_price(message: types.Message):
         products = load_products()
         found = False
         for p in products:
-            if p['id'] == product_id:
+            # Type error bermasligi uchun qattiq himoya
+            if isinstance(p, dict) and p.get('id') == product_id:
                 p['price'] = new_price
                 found = True
                 break
@@ -135,7 +142,7 @@ async def handle_link(message: types.Message):
     
     if info and info.get('name'):
         products = load_products()
-        new_id = max([p.get('id', 0) for p in products], default=0) + 1
+        new_id = max([p.get('id', 0) for p in products if isinstance(p, dict)], default=0) + 1
         new_product = {
             "id": new_id,
             "name": info['name'],
