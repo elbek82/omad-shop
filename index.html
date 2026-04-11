@@ -327,8 +327,11 @@
             list.innerHTML = products.map(p => `
                 <div class="product-card">
                     <div class="product-image-container">
-                        <img src="${p.img || 'https://via.placeholder.com/150'}" class="product-image">
-                    </div>
+    <img src="${p.img}" 
+         class="product-image" 
+         alt="${p.name}"
+         onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
+</div>
                     <div class="product-info">
                         <div class="product-title">${p.name}</div>
                         <div class="product-price">${Number(p.price).toLocaleString()} so'm</div>
