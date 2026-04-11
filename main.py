@@ -11,7 +11,7 @@ from aiogram.filters import CommandStart
 from aiogram.types import WebAppInfo
 
 # --- KONFIGURATSIYA (TOKEN QO'YILDI) ---
-API_TOKEN = "8353606263:AAEujCWfm17TocnBXZ_TLcfC5DQkcsrV7Q0"   # <-- SIZNING TOKENINGIZ
+API_TOKEN = "8353606263:AAFdwZSNdYmK5Qfaj8TAlmfj-RIG-JiuKpU"   # <-- SIZNING TOKENINGIZ
 ADMIN_ID = int(os.getenv("ADMIN_ID", "797324958"))  # O'z ID-raqamingizni qo'ying
 WEB_APP_URL = os.getenv("WEB_APP_URL", "https://omad-shop.vercel.app")
 DATA_FILE = "products.json"
