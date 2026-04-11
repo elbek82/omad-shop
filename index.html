@@ -9,24 +9,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #f6f7f9; 
-            padding-bottom: 80px;
-            -webkit-tap-highlight-color: transparent;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f6f7f9; padding-bottom: 80px; -webkit-tap-highlight-color: transparent; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Sariq va qora tema ranglari */
-        .bg-main-yellow { background-color: #FFD700; } /* Asosiy sariq */
+        .bg-main-yellow { background-color: #FFD700; }
         .text-main-yellow { color: #FFD700; }
-        .bg-main-black { background-color: #111111; } /* Asosiy qora */
-        
+        .bg-main-black { background-color: #111111; }
         .modal-active { overflow: hidden !important; }
-        .heart-active { color: #ff3b30; }
-        
-        /* Chiroyli soyalar */
         .card-shadow { box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
         .bottom-nav-shadow { box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
     </style>
@@ -35,50 +24,39 @@
 
     <header class="bg-white px-4 py-3 sticky top-0 z-30 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-main-black flex items-center justify-center text-main-yellow font-black text-xs border-2 border-main-yellow shadow-md">
-                6707
-            </div>
+            <div class="w-10 h-10 rounded-full bg-main-black flex items-center justify-center text-main-yellow font-black text-xs border-2 border-main-yellow shadow-md">6707</div>
             <h1 class="font-black text-xl tracking-tight">AVTO 6707</h1>
         </div>
-        <div class="flex gap-4">
-            <button class="text-xl text-gray-800"><i class="fa-regular fa-bell"></i></button>
-        </div>
+        <button class="text-xl text-gray-800" onclick="renderProducts(allProducts)"><i class="fa-solid fa-rotate-right"></i></button>
     </header>
 
     <div class="bg-white px-4 pb-3">
         <div class="relative">
             <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
-            <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Mahsulotlarni izlash..." 
-                class="w-full bg-gray-100 rounded-2xl py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-main-yellow transition-all text-sm font-medium">
-        </div>
-    </div>
-
-    <div class="px-4 mt-4">
-        <div class="bg-main-black rounded-2xl p-5 relative overflow-hidden flex items-center shadow-lg">
-            <div class="relative z-10 w-2/3">
-                <span class="bg-main-yellow text-black text-[10px] font-bold px-2 py-1 rounded-md uppercase">Yangi</span>
-                <h2 class="text-white font-black text-lg mt-2 leading-tight">Barcha aksessuarlarga 20% chegirma!</h2>
-            </div>
-            <i class="fa-solid fa-car text-6xl absolute -right-2 -bottom-2 text-gray-700 opacity-50 transform rotate-12"></i>
+            <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Mahsulotlarni izlash..." class="w-full bg-gray-100 rounded-2xl py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-main-yellow text-sm font-medium">
         </div>
     </div>
 
     <div class="px-4 mt-6 mb-2">
         <h3 class="font-bold text-lg mb-3">Kategoriyalar</h3>
         <div class="flex gap-4 overflow-x-auto hide-scroll pb-2">
-            <div class="flex flex-col items-center gap-1 min-w-[70px]">
+            <div class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer" onclick="renderProducts(allProducts)">
+                <div class="w-14 h-14 rounded-full bg-main-black flex items-center justify-center text-main-yellow text-2xl mb-1 shadow-sm"><i class="fa-solid fa-border-all"></i></div>
+                <span class="text-xs font-medium text-center">Barchasi</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer" onclick="filterCategory('G\\'iloflar')">
                 <div class="w-14 h-14 rounded-full bg-yellow-100 flex items-center justify-center text-main-yellow text-2xl mb-1 shadow-sm"><i class="fa-solid fa-key"></i></div>
                 <span class="text-xs font-medium text-center">Pult g'ilof</span>
             </div>
-            <div class="flex flex-col items-center gap-1 min-w-[70px]">
+            <div class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer" onclick="filterCategory('Tozalash')">
                 <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm"><i class="fa-solid fa-pump-soap"></i></div>
                 <span class="text-xs font-medium text-center">Tozalash</span>
             </div>
-            <div class="flex flex-col items-center gap-1 min-w-[70px]">
+            <div class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer" onclick="filterCategory('Xavfsizlik')">
                 <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <span class="text-xs font-medium text-center">Xavfsizlik</span>
             </div>
-            <div class="flex flex-col items-center gap-1 min-w-[70px]">
+            <div class="flex flex-col items-center gap-1 min-w-[70px] cursor-pointer" onclick="filterCategory('Asboblar')">
                 <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm"><i class="fa-solid fa-screwdriver-wrench"></i></div>
                 <span class="text-xs font-medium text-center">Asboblar</span>
             </div>
@@ -86,7 +64,7 @@
     </div>
 
     <div class="px-4 mt-4">
-        <h3 class="font-bold text-lg mb-3">Ommabop mahsulotlar</h3>
+        <h3 id="gridTitle" class="font-bold text-lg mb-3">Ommabop mahsulotlar</h3>
         <div id="products-grid" class="grid grid-cols-2 gap-3">
             <p class="col-span-2 text-center text-gray-400 my-10"><i class="fas fa-spinner fa-spin text-3xl"></i><br>Yuklanmoqda...</p>
         </div>
@@ -96,111 +74,36 @@
         <div class="absolute inset-0 bg-black bg-opacity-50 transition-opacity" onclick="closeModal()"></div>
         <div class="bg-white w-full h-[90vh] rounded-t-[24px] z-50 flex flex-col transform transition-transform translate-y-full" id="modalContent">
             <div class="flex justify-center pt-3 pb-1"><div class="w-12 h-1.5 bg-gray-300 rounded-full"></div></div>
-            
             <div class="overflow-y-auto px-4 pb-20 flex-1 hide-scroll">
                 <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 rounded-full text-gray-600 flex justify-center items-center"><i class="fa-solid fa-xmark"></i></button>
-                
                 <div class="w-full h-64 bg-gray-50 rounded-2xl flex items-center justify-center mt-2 p-2">
                     <img id="modalImg" src="" class="max-h-full object-contain mix-blend-multiply">
                 </div>
-                
                 <div class="mt-4 flex justify-between items-start">
                     <div>
                         <p id="modalPrice" class="text-2xl font-black text-gray-900 leading-none mb-1">0 so'm</p>
                         <h2 id="modalTitle" class="text-lg font-bold text-gray-700 leading-tight">Nomi</h2>
                     </div>
                 </div>
-
-                <div class="flex items-center gap-1 mt-2 text-sm">
-                    <i class="fa-solid fa-star text-main-yellow"></i>
-                    <i class="fa-solid fa-star text-main-yellow"></i>
-                    <i class="fa-solid fa-star text-main-yellow"></i>
-                    <i class="fa-solid fa-star text-main-yellow"></i>
-                    <i class="fa-solid fa-star-half-stroke text-main-yellow"></i>
-                    <span class="text-gray-500 ml-1 font-medium">4.8 (124 izoh)</span>
-                </div>
-                
                 <h3 class="font-bold mt-6 mb-2 text-gray-800">Tavsif</h3>
                 <p id="modalDesc" class="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl">Ma'lumot.</p>
-
-                <h3 class="font-bold mt-6 mb-3 text-gray-800">Xaridorlar izohi</h3>
-                <div class="space-y-3">
-                    <div class="bg-gray-50 p-3 rounded-xl">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="font-bold text-sm">Sardor B.</span>
-                            <span class="text-[10px] text-gray-400">Kecha</span>
-                        </div>
-                        <div class="flex text-main-yellow text-[10px] mb-1"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                        <p class="text-xs text-gray-600">Sifati juda zo'r ekan, mashinamga chotki tushdi. Rahmat!</p>
-                    </div>
-                </div>
             </div>
-            
             <div class="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 flex gap-3">
-                <button onclick="toggleModalFavorite()" class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-xl text-gray-400">
-                    <i id="modalHeartBtn" class="fa-regular fa-heart"></i>
-                </button>
-                <button onclick="addToCartFromModal()" class="flex-1 bg-main-yellow text-black font-black text-lg rounded-2xl shadow-lg active:scale-95 transition-transform">
-                    Karzinkaga qo'shish
-                </button>
+                <button onclick="toggleModalFavorite()" class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-xl text-gray-400"><i id="modalHeartBtn" class="fa-regular fa-heart"></i></button>
+                <button onclick="addToCartFromModal()" class="flex-1 bg-main-yellow text-black font-black text-lg rounded-2xl shadow-lg active:scale-95 transition-transform">Karzinkaga qo'shish</button>
             </div>
-        </div>
-    </div>
-
-    <div id="checkoutModal" class="fixed inset-0 z-50 hidden items-end justify-center">
-        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="closeCheckout()"></div>
-        <div class="bg-white w-full h-[80vh] rounded-t-[24px] z-50 flex flex-col p-5 transform transition-transform translate-y-full" id="checkoutContent">
-            <h2 class="text-xl font-black mb-4 border-b pb-3">Buyurtmani rasmiylashtirish</h2>
-            
-            <div class="overflow-y-auto hide-scroll flex-1 space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">To'liq ismingiz</label>
-                    <input type="text" id="custName" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-main-yellow" placeholder="Alisher Vahobov">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Telefon raqamingiz <span class="text-red-500">*</span></label>
-                    <input type="tel" id="custPhone" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-main-yellow font-medium" placeholder="+998 90 123 45 67">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Yetkazib berish manzili <span class="text-red-500">*</span></label>
-                    <textarea id="custAddress" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-main-yellow text-sm" placeholder="Viloyat, shahar, ko'cha, uy raqami..."></textarea>
-                </div>
-                
-                <div class="bg-gray-100 p-4 rounded-xl mt-4">
-                    <div class="flex justify-between text-sm font-bold mb-2"><span>Jami to'lov:</span> <span id="checkoutTotal" class="text-main-black text-lg">0 so'm</span></div>
-                    <p class="text-[10px] text-gray-500 text-center">* Tez orada Click orqali to'lov ulanadi.</p>
-                </div>
-            </div>
-
-            <button onclick="submitOrder()" class="w-full bg-main-black text-main-yellow font-black text-lg rounded-2xl shadow-lg py-4 mt-4">
-                Buyurtmani tasdiqlash
-            </button>
         </div>
     </div>
 
     <div class="fixed bottom-0 left-0 w-full bg-white bottom-nav-shadow flex justify-around items-center py-3 px-2 z-40 rounded-t-[20px]">
-        <button class="flex flex-col items-center gap-1 text-main-black w-16">
-            <i class="fa-solid fa-house text-xl"></i>
-            <span class="text-[10px] font-bold">Asosiy</span>
-        </button>
-        <button onclick="showFavoritesOnly()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
-            <i class="fa-solid fa-heart text-xl"></i>
-            <span class="text-[10px] font-bold">Sevimlilar</span>
-        </button>
-        
-        <button onclick="openCheckout()" class="relative flex flex-col items-center justify-center w-14 h-14 -mt-6 bg-main-yellow text-main-black rounded-full shadow-lg border-4 border-[#f6f7f9] transform active:scale-95">
+        <button onclick="renderProducts(allProducts)" class="flex flex-col items-center gap-1 text-main-black w-16"><i class="fa-solid fa-house text-xl"></i><span class="text-[10px] font-bold">Asosiy</span></button>
+        <button onclick="showFavoritesOnly()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors"><i class="fa-solid fa-heart text-xl"></i><span class="text-[10px] font-bold">Sevimlilar</span></button>
+        <button class="relative flex flex-col items-center justify-center w-14 h-14 -mt-6 bg-main-yellow text-main-black rounded-full shadow-lg border-4 border-[#f6f7f9] transform active:scale-95">
             <i class="fa-solid fa-cart-shopping text-xl"></i>
             <div id="cartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex justify-center items-center rounded-full hidden">0</div>
         </button>
-
-        <button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
-            <i class="fa-solid fa-box text-xl"></i>
-            <span class="text-[10px] font-bold">Buyurtma</span>
-        </button>
-        <button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
-            <i class="fa-solid fa-user text-xl"></i>
-            <span class="text-[10px] font-bold">Profil</span>
-        </button>
+        <button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors"><i class="fa-solid fa-box text-xl"></i><span class="text-[10px] font-bold">Buyurtma</span></button>
+        <button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors"><i class="fa-solid fa-user text-xl"></i><span class="text-[10px] font-bold">Profil</span></button>
     </div>
 
     <script>
@@ -213,35 +116,42 @@
         let favorites = []; 
         let currentProduct = null;
 
-        // DIQQAT: Render ssilkani tekshiring!
         const API_URL = 'https://omad-shop-1.onrender.com/api/products'; 
 
         async function loadProducts() {
             try {
                 const res = await fetch(API_URL);
                 allProducts = await res.json();
-                allProducts.reverse(); // Yangilari birinchi chiqadi
+                allProducts.reverse();
                 renderProducts(allProducts);
             } catch(e) {
                 document.getElementById('products-grid').innerHTML = '<p class="col-span-2 text-center text-red-500">Ulanish xatosi!</p>';
             }
         }
 
+        // ====== YANGI: KATEGORIYA FILTRI ======
+        function filterCategory(categoryName) {
+            const filtered = allProducts.filter(p => p.category === categoryName);
+            document.getElementById('gridTitle').innerText = categoryName; // Sarlavhani o'zgartirish
+            renderProducts(filtered);
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        }
+
         function toggleFav(id, event) {
-            event.stopPropagation(); // Karta ochilib ketmasligi uchun
-            if(favorites.includes(id)) {
-                favorites = favorites.filter(favId => favId !== id);
-            } else {
-                favorites.push(id);
-                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-            }
-            renderProducts(allProducts); // Qayta chizish
+            event.stopPropagation();
+            if(favorites.includes(id)) { favorites = favorites.filter(favId => favId !== id); } 
+            else { favorites.push(id); if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); }
+            // Qaysi kategoriya ochiq bo'lsa o'shani yangilash
+            const currentTitle = document.getElementById('gridTitle').innerText;
+            if(currentTitle === "Ommabop mahsulotlar" || currentTitle === "Barchasi") renderProducts(allProducts);
+            else if (currentTitle === "Sevimlilar") showFavoritesOnly();
+            else filterCategory(currentTitle);
         }
 
         function renderProducts(products) {
             const grid = document.getElementById('products-grid');
             if (products.length === 0) {
-                grid.innerHTML = '<p class="col-span-2 text-center text-gray-400 my-10">Mahsulot topilmadi</p>';
+                grid.innerHTML = '<p class="col-span-2 text-center text-gray-400 my-10"><i class="fa-solid fa-box-open text-4xl mb-2 opacity-50"></i><br>Bu bo`limda mahsulot yo`q</p>';
                 return;
             }
             
@@ -254,20 +164,16 @@
                     <button onclick="toggleFav(${p.id}, event)" class="absolute top-3 right-3 z-10 w-7 h-7 bg-white bg-opacity-80 rounded-full flex justify-center items-center shadow-sm">
                         <i class="${heartClass} text-sm transition-colors"></i>
                     </button>
-                    
-                    <div class="bg-gray-50 rounded-xl mb-2 flex items-center justify-center h-36 overflow-hidden">
+                    <div class="bg-gray-50 rounded-xl mb-2 flex items-center justify-center h-36 overflow-hidden relative">
                         <img src="${p.img || 'https://via.placeholder.com/150'}" class="max-w-full max-h-full object-contain mix-blend-multiply">
+                        <div class="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">${p.category || 'Boshqa'}</div>
                     </div>
                     <div>
                         <h3 class="text-[13px] font-bold text-gray-800 leading-tight mb-1.5 line-clamp-2 h-8">${p.name}</h3>
-                        <div class="flex items-center gap-1 mb-2 text-[10px] text-gray-400 font-medium">
-                            <i class="fa-solid fa-star text-main-yellow"></i> 4.8
-                        </div>
+                        <div class="flex items-center gap-1 mb-2 text-[10px] text-gray-400 font-medium"><i class="fa-solid fa-star text-main-yellow"></i> 4.8</div>
                         <div class="flex justify-between items-end">
                             <span class="text-main-black font-black text-sm">${Number(p.price).toLocaleString()} <span class="text-[10px]">so'm</span></span>
-                            <button class="bg-main-yellow text-black w-7 h-7 rounded-full flex items-center justify-center shadow-sm">
-                                <i class="fa-solid fa-cart-plus text-xs"></i>
-                            </button>
+                            <button class="bg-main-yellow text-black w-7 h-7 rounded-full flex items-center justify-center shadow-sm"><i class="fa-solid fa-cart-plus text-xs"></i></button>
                         </div>
                     </div>
                 </div>
@@ -277,19 +183,14 @@
         function openModal(id) {
             currentProduct = allProducts.find(p => p.id === id);
             if (!currentProduct) return;
-
             document.getElementById('modalImg').src = currentProduct.img;
             document.getElementById('modalTitle').innerText = currentProduct.name;
             document.getElementById('modalPrice').innerText = Number(currentProduct.price).toLocaleString() + " so'm";
             document.getElementById('modalDesc').innerText = currentProduct.description || "Tafsilotlar yo'q.";
             
-            // Like holatini tekshirish
             const heartBtn = document.getElementById('modalHeartBtn');
-            if(favorites.includes(id)) {
-                heartBtn.className = "fa-solid fa-heart text-red-500";
-            } else {
-                heartBtn.className = "fa-regular fa-heart";
-            }
+            if(favorites.includes(id)) heartBtn.className = "fa-solid fa-heart text-red-500";
+            else heartBtn.className = "fa-regular fa-heart";
             
             const modal = document.getElementById('productModal');
             const content = document.getElementById('modalContent');
@@ -321,7 +222,7 @@
                 heartBtn.className = "fa-solid fa-heart text-red-500 transition-colors";
                 if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
             }
-            renderProducts(allProducts); // orqa fonni yangilash
+            renderProducts(allProducts);
         }
 
         function addToCartFromModal() {
@@ -335,75 +236,21 @@
 
         function updateCartBadge() {
             const badge = document.getElementById('cartBadge');
-            if (cart.length > 0) {
-                badge.innerText = cart.length;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
+            if (cart.length > 0) { badge.innerText = cart.length; badge.classList.remove('hidden'); } 
+            else { badge.classList.add('hidden'); }
         }
 
-        // Qidiruv
         function searchProducts() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
+            document.getElementById('gridTitle').innerText = "Qidiruv natijalari";
             renderProducts(filtered);
         }
 
-        // Faqat sevimlilarni ko'rsatish
         function showFavoritesOnly() {
             const favProducts = allProducts.filter(p => favorites.includes(p.id));
+            document.getElementById('gridTitle').innerText = "Sevimlilar";
             renderProducts(favProducts);
-        }
-
-        // CHECKOUT (Buyurtma Formasi)
-        function openCheckout() {
-            if(cart.length === 0) {
-                tg.showAlert("Karzinkangiz bo'sh. Xarid qilish uchun mahsulot qo'shing!");
-                return;
-            }
-            
-            let total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
-            document.getElementById('checkoutTotal').innerText = total.toLocaleString() + " so'm";
-            
-            const modal = document.getElementById('checkoutModal');
-            const content = document.getElementById('checkoutContent');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => content.classList.remove('translate-y-full'), 10);
-            document.body.classList.add('modal-active');
-        }
-
-        function closeCheckout() {
-            const modal = document.getElementById('checkoutModal');
-            const content = document.getElementById('checkoutContent');
-            content.classList.add('translate-y-full');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.body.classList.remove('modal-active');
-            }, 300);
-        }
-
-        function submitOrder() {
-            const phone = document.getElementById('custPhone').value;
-            const address = document.getElementById('custAddress').value;
-            
-            if(!phone || !address) {
-                tg.showAlert("Iltimos, telefon raqam va manzilni to'liq kiriting!");
-                return;
-            }
-
-            // Ma'lumotlarni Telegram botga jo'natish
-            let orderData = {
-                action: 'new_order',
-                phone: phone,
-                address: address,
-                items: cart
-            };
-            
-            tg.sendData(JSON.stringify(orderData));
-            tg.close(); // Web appni yopamiz (botga xabar ketadi)
         }
 
         loadProducts();
