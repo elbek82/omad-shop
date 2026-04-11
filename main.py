@@ -11,7 +11,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from aiogram.utils import executor
 
 # ========== SOZLAMALAR ==========
-BOT_TOKEN = "8353606263:AAHImyDaiU8G18ZSxwiV9shAyZ8s29WEK3s"   # Sizning token
+BOT_TOKEN = "8353606263:AAFOZDP1AyIUpMzHyJ_rgLb1BK49T7vUkzk"   # Sizning token
 ADMIN_ID = 797324958   # O'z ID raqamingiz
 WEB_APP_URL = "https://omad-shop.vercel.app"   # Diqqat: Bu VERCEL ssilkangiz
 DATA_FILE = "products.json"
