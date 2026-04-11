@@ -3,40 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Omad Savdo</title>
+    <title>OMAD AUTO - Aksessuarlar do'koni</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --main-color: #7000ff;
-            --bg-color: #f2f4f7;
-            --text-color: #1f2026;
+            --main-color: #1a73e8; /* Moviy avto-premium rang */
+            --accent-color: #ff4d4d; /* Urg'u uchun qizil */
+            --bg-color: #f8f9fb;
+            --text-color: #1c1e21;
+            --card-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            --banner-gradient: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg-color);
             margin: 0;
             padding: 0;
             color: var(--text-color);
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
+        /* Premium Header */
         header {
             background: white;
-            padding: 15px;
+            padding: 15px 20px;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .logo-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--main-color);
         }
 
         .search-bar {
-            background: #edeff2;
-            border-radius: 10px;
-            padding: 10px;
+            background: #f1f3f6;
+            border-radius: 12px;
+            padding: 12px 15px;
             display: flex;
             align-items: center;
+            transition: 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .search-bar:focus-within {
+            background: white;
+            border-color: var(--main-color);
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
         }
 
         .search-bar input {
@@ -45,97 +74,171 @@
             outline: none;
             width: 100%;
             margin-left: 10px;
-            font-size: 16px;
+            font-size: 15px;
         }
 
+        /* Dynamic Banner */
+        .promo-banner {
+            margin: 15px;
+            padding: 25px;
+            background: var(--banner-gradient);
+            border-radius: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(26, 115, 232, 0.3);
+        }
+
+        .promo-banner::after {
+            content: '\f1b9'; /* Avtomobil ikonkasi */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            right: -20px;
+            bottom: -10px;
+            font-size: 120px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+
+        .promo-banner h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .promo-banner p {
+            margin: 8px 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        /* Categories */
         .categories {
             display: flex;
             overflow-x: auto;
-            padding: 15px;
-            gap: 10px;
-            white-space: nowrap;
+            padding: 5px 15px 15px;
+            gap: 12px;
+            scrollbar-width: none;
         }
+
+        .categories::-webkit-scrollbar { display: none; }
 
         .cat-item {
             background: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 10px 18px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            white-space: nowrap;
+            border: 1px solid #f0f0f0;
         }
 
+        .cat-item.active {
+            background: var(--main-color);
+            color: white;
+            border-color: var(--main-color);
+        }
+
+        /* Product Grid & Cards */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            padding: 10px;
+            gap: 15px;
+            padding: 0 15px;
         }
 
         .product-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 18px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             position: relative;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s;
+        }
+
+        .product-card:active {
+            transform: scale(0.97);
+        }
+
+        .product-image-container {
+            width: 100%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            background: #fdfdfd;
         }
 
         .product-image {
             width: 100%;
-            aspect-ratio: 3/4;
-            object-fit: cover;
+            height: 100%;
+            object-fit: contain; /* Avto mahsulotlar yaxshi ko'rinishi uchun */
+            padding: 10px;
         }
 
         .product-info {
-            padding: 10px;
+            padding: 12px;
             flex-grow: 1;
         }
 
         .product-title {
-            font-size: 13px;
+            font-size: 14px;
+            font-weight: 600;
             line-height: 1.4;
-            height: 38px;
+            height: 40px;
             overflow: hidden;
-            margin-bottom: 5px;
+            color: #333;
+            margin-bottom: 8px;
         }
 
         .product-price {
-            font-weight: bold;
-            font-size: 16px;
-            color: var(--text-color);
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--main-color);
         }
 
         .add-to-cart {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: white;
-            border: 1px solid #e2e5eb;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
+            bottom: 12px;
+            right: 12px;
+            background: var(--main-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--main-color);
+            box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
         }
 
+        /* Bottom Nav */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             width: 100%;
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #e2e5eb;
+            padding: 12px 0 25px; /* iPhone uchun joy */
+            border-top: 1px solid #eee;
             z-index: 1000;
         }
 
         .nav-item {
             text-align: center;
-            font-size: 12px;
-            color: #9ea1a7;
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            transition: 0.3s;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
         }
 
         .nav-item.active {
@@ -143,62 +246,72 @@
         }
 
         .badge {
-            background: #ff3b30;
+            background: var(--accent-color);
             color: white;
-            border-radius: 50%;
+            border-radius: 8px;
             padding: 2px 6px;
             font-size: 10px;
             position: absolute;
-            top: 5px;
+            top: -5px;
+            right: -10px;
+            border: 2px solid white;
         }
     </style>
 </head>
 <body>
 
     <header>
+        <div class="logo-area">
+            <h1>OMAD <span style="color: #333;">AUTO</span></h1>
+            <i class="fa fa-bell" style="color: #ccc;"></i>
+        </div>
         <div class="search-bar">
             <i class="fa fa-search" style="color: #9ea1a7;"></i>
-            <input type="text" placeholder="Mahsulotlarni qidirish...">
+            <input type="text" placeholder="Aksessuar qidirish...">
         </div>
     </header>
 
+    <div class="promo-banner">
+        <h2>Premium Sifat</h2>
+        <p>Avtomobilingiz uchun eng sara <br>aksessuarlar faqat bizda!</p>
+    </div>
+
     <div class="categories">
-        <div class="cat-item">Barchasi</div>
+        <div class="cat-item active">Barchasi</div>
+        <div class="cat-item">Salon uchun</div>
+        <div class="cat-item">Tashqi ko'rinish</div>
         <div class="cat-item">Elektronika</div>
-        <div class="cat-item">Kiyimlar</div>
-        <div class="cat-item">Aksessuarlar</div>
     </div>
 
     <div class="product-grid" id="product-list">
         </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active"><i class="fa fa-home fa-lg"></i><br>Asosiy</div>
-        <div class="nav-item"><i class="fa fa-heart fa-lg"></i><br>Saralangan</div>
+        <div class="nav-item active"><i class="fa-solid fa-car"></i><br>Asosiy</div>
+        <div class="nav-item"><i class="fa-regular fa-heart"></i><br>Saralangan</div>
         <div class="nav-item" style="position: relative;">
-            <i class="fa fa-shopping-cart fa-lg"></i><span class="badge" id="cart-count">0</span><br>Savatcha
+            <i class="fa-solid fa-basket-shopping"></i><span class="badge" id="cart-count">0</span><br>Savatcha
         </div>
-        <div class="nav-item"><i class="fa fa-user fa-lg"></i><br>Profil</div>
+        <div class="nav-item"><i class="fa-regular fa-user"></i><br>Profil</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.MainButton.setText("BUYURTMANI RASMIYLASHTIRISH");
-        tg.MainButton.setParams({color: '#7000ff'});
+        tg.MainButton.setText("BUYURTMANI TASDIQLASH");
+        tg.MainButton.setParams({color: '#1a73e8'});
 
         let products = [];
         let cart = [];
 
         async function fetchProducts() {
             try {
-                console.log("Ma'lumot olinmoqda...");
                 const response = await fetch('https://omad-shop-1.onrender.com/api/products');
                 products = await response.json();
-                console.log("Mahsulotlar yuklandi:", products);
                 renderProducts();
             } catch (error) {
                 console.error("Xatolik yuklashda:", error);
+                document.getElementById('product-list').innerHTML = "<p style='padding:20px'>Server bilan ulanishda xato...</p>";
             }
         }
 
@@ -207,13 +320,15 @@
             if (!list) return;
             
             if (products.length === 0) {
-                list.innerHTML = "<p style='padding: 20px;'>Hozircha mahsulot yo'q. Bot orqali qo'shing.</p>";
+                list.innerHTML = "<p style='padding: 20px; text-align:center; grid-column: 1/3;'>Hozircha mahsulot yo'q.</p>";
                 return;
             }
 
             list.innerHTML = products.map(p => `
                 <div class="product-card">
-                    <img src="${p.img || 'https://via.placeholder.com/150'}" class="product-image">
+                    <div class="product-image-container">
+                        <img src="${p.img || 'https://via.placeholder.com/150'}" class="product-image">
+                    </div>
                     <div class="product-info">
                         <div class="product-title">${p.name}</div>
                         <div class="product-price">${Number(p.price).toLocaleString()} so'm</div>
@@ -234,7 +349,7 @@
                 if (!tg.MainButton.isVisible) {
                     tg.MainButton.show();
                 }
-                tg.HapticFeedback.impactOccurred('medium');
+                tg.HapticFeedback.notificationOccurred('success');
             }
         }
 
@@ -242,7 +357,6 @@
             tg.sendData(JSON.stringify(cart));
         });
 
-        // Ishga tushirish
         fetchProducts();
     </script>
 </body>
