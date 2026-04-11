@@ -134,8 +134,8 @@ async def unknown_admin_message(message: types.Message):
 async def handle_api(request):
     products = await load_products()
     return web.json_response(products, headers={
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json'
+        'Access-Control-Allow-Origin': '*'
+        # Content-Type ni qo'lda yozish shart emas, json_response o'zi qo'shadi
     })
 
 # --- ASOSIY FUNKSIYA ---
