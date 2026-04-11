@@ -8,107 +8,178 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #f3f4f6; padding-bottom: 80px; -webkit-tap-highlight-color: transparent; }
-        .modal { transition: opacity 0.25s ease; }
-        body.modal-active { overflow-x: hidden; overflow-y: hidden !important; }
-        .star-active { color: #fbbf24; }
-        .star-inactive { color: #d1d5db; }
+        body { 
+            background-color: var(--tg-theme-secondary-bg-color, #f3f4f6); 
+            color: var(--tg-theme-text-color, #1f2937);
+            padding-bottom: 90px; 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        /* Maxsus skrollbarni yashirish */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Modal oyna animatsiyalari */
+        .modal-active { overflow: hidden !important; }
+        .product-card { transition: transform 0.1s ease-in-out; }
+        .product-card:active { transform: scale(0.97); }
+        
+        /* Tema ranglari */
+        .header-bg { background-color: var(--tg-theme-bg-color, #ffffff); }
+        .card-bg { background-color: var(--tg-theme-bg-color, #ffffff); }
+        .btn-primary { background-color: var(--tg-theme-button-color, #2563eb); color: var(--tg-theme-button-text-color, #ffffff); }
     </style>
 </head>
-<body class="text-gray-800 antialiased">
+<body class="antialiased">
 
-    <header class="bg-gray-900 text-white p-4 sticky top-0 z-10 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-bold tracking-wider"><i class="fa-solid fa-car-side mr-2"></i>AVTO 6707</h1>
-        <div class="flex gap-4 text-xl">
-            <button onclick="toggleFavorites()"><i class="fa-regular fa-heart"></i></button>
-        </div>
+    <header class="header-bg shadow-sm sticky top-0 z-20 px-4 py-3 flex justify-between items-center rounded-b-2xl">
+        <h1 class="text-xl font-black tracking-tight flex items-center gap-2">
+            <i class="fa-solid fa-car text-blue-600"></i> AVTO 6707
+        </h1>
+        <button onclick="tg.close()" class="text-gray-400 text-xl"><i class="fa-solid fa-xmark"></i></button>
     </header>
 
-    <div class="px-4 py-3 overflow-x-auto whitespace-nowrap hide-scroll">
-        <button class="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold mr-2">Barchasi</button>
-        <button class="bg-white border border-gray-300 px-4 py-1 rounded-full text-sm mr-2">Pult g'iloflari</button>
-        <button class="bg-white border border-gray-300 px-4 py-1 rounded-full text-sm">Favqulodda</button>
+    <div class="px-4 mt-4">
+        <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400"></i>
+            <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Mahsulot izlash..." 
+                class="w-full card-bg border border-gray-200 rounded-2xl py-3 pl-10 pr-4 outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm">
+        </div>
+    </div>
+
+    <div class="px-4 mt-5 mb-2 overflow-x-auto whitespace-nowrap hide-scroll flex gap-2">
+        <button class="btn-primary px-5 py-1.5 rounded-full text-sm font-semibold shadow-md">Barchasi</button>
+        <button class="card-bg border border-gray-200 px-5 py-1.5 rounded-full text-sm font-medium">Yangi kelganlar</button>
+        <button class="card-bg border border-gray-200 px-5 py-1.5 rounded-full text-sm font-medium">Aksessuarlar</button>
     </div>
 
     <div id="products-grid" class="grid grid-cols-2 gap-3 p-4">
-        <p class="col-span-2 text-center text-gray-500 mt-10"><i class="fas fa-spinner fa-spin text-2xl"></i><br>Yuklanmoqda...</p>
+        <div class="col-span-2 text-center text-gray-400 mt-12">
+            <i class="fas fa-circle-notch fa-spin text-4xl mb-3 text-blue-500"></i>
+            <p class="font-medium">Magazin yuklanmoqda...</p>
+        </div>
     </div>
 
-    <div id="productModal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-end justify-center z-50">
-        <div class="modal-overlay absolute w-full h-full bg-black bg-opacity-50" onclick="closeModal()"></div>
-        <div class="modal-container bg-white w-full h-5/6 rounded-t-3xl shadow-lg z-50 overflow-y-auto transform transition-transform duration-300 translate-y-full">
-            <div class="p-5">
-                <button onclick="closeModal()" class="float-right text-gray-500 text-2xl">&times;</button>
-                <img id="modalImg" src="" class="w-full h-64 object-contain rounded-xl mb-4 bg-gray-50">
-                <h2 id="modalTitle" class="text-2xl font-bold mb-2">Mahsulot Nomi</h2>
+    <div id="productModal" class="fixed inset-0 z-50 hidden items-end justify-center">
+        <div class="absolute inset-0 bg-black bg-opacity-60 transition-opacity" onclick="closeModal()"></div>
+        <div class="card-bg w-full h-[85vh] rounded-t-[30px] z-50 flex flex-col transform transition-transform translate-y-full" id="modalContent">
+            
+            <div class="flex justify-center pt-3 pb-2">
+                <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+            </div>
+            
+            <div class="overflow-y-auto px-5 pb-6 flex-1 hide-scroll">
+                <button onclick="closeModal()" class="absolute top-4 right-5 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-600">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
                 
-                <div class="flex items-center mb-3 text-lg">
-                    <i class="fa-solid fa-star star-active"></i>
-                    <i class="fa-solid fa-star star-active"></i>
-                    <i class="fa-solid fa-star star-active"></i>
-                    <i class="fa-solid fa-star star-active"></i>
-                    <i class="fa-regular fa-star star-inactive"></i>
-                    <span class="text-sm text-gray-500 ml-2">(4.0)</span>
+                <div class="bg-white rounded-2xl p-4 mb-4 mt-2 shadow-sm border border-gray-100 flex justify-center items-center h-64">
+                    <img id="modalImg" src="" class="max-h-full object-contain rounded-xl">
                 </div>
-
-                <p id="modalPrice" class="text-blue-600 text-2xl font-black mb-4">0 so'm</p>
-                <h3 class="font-bold text-gray-700 mb-1">Tavsifi:</h3>
-                <p id="modalDesc" class="text-gray-600 text-sm mb-6 leading-relaxed">Bu yerda mahsulot haqida ma'lumot bo'ladi.</p>
                 
-                <button onclick="addToCartFromModal()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg active:bg-blue-700">
-                    <i class="fa-solid fa-cart-plus mr-2"></i> Karzinkaga qo'shish
+                <div class="flex justify-between items-start mb-2">
+                    <h2 id="modalTitle" class="text-xl font-bold leading-tight pr-4">Mahsulot Nomi</h2>
+                </div>
+                
+                <p id="modalPrice" class="text-2xl font-black text-blue-600 mb-4">0 so'm</p>
+                
+                <h3 class="font-bold mb-2 text-sm uppercase tracking-wide text-gray-500">Tavsifi</h3>
+                <p id="modalDesc" class="text-sm leading-relaxed text-gray-600 bg-gray-50 p-4 rounded-2xl border border-gray-100">Ma'lumot yo'q.</p>
+            </div>
+            
+            <div class="p-4 border-t border-gray-100">
+                <button onclick="addToCartFromModal()" class="btn-primary w-full py-3.5 rounded-2xl font-bold text-lg shadow-lg flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping"></i> Karzinkaga qo'shish
                 </button>
             </div>
         </div>
     </div>
 
     <div class="fixed bottom-4 left-0 right-0 px-4 z-40">
-        <button id="mainCartBtn" onclick="openCart()" class="w-full bg-gray-900 text-white p-4 rounded-2xl shadow-xl flex justify-between items-center hidden">
-            <span class="font-bold"><i class="fa-solid fa-cart-shopping mr-2"></i> Karzinka (<span id="cartCount">0</span>)</span>
-            <span id="cartTotal" class="font-bold">0 so'm</span>
+        <button id="mainCartBtn" onclick="openCart()" class="w-full btn-primary p-4 rounded-2xl shadow-2xl flex justify-between items-center hidden transform transition-all hover:scale-[1.02]">
+            <div class="flex items-center gap-3">
+                <div class="bg-white bg-opacity-20 w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+                <div class="text-left">
+                    <p class="text-xs text-blue-100 font-medium uppercase tracking-wider">Karzinka</p>
+                    <p class="font-bold text-sm"><span id="cartCount">0</span> ta mahsulot</p>
+                </div>
+            </div>
+            <span id="cartTotal" class="font-black text-lg bg-white text-blue-600 px-3 py-1 rounded-xl">0 so'm</span>
         </button>
     </div>
 
     <script>
+        // Telegram sozlamalari
         let tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // Ekranni to'liq ochish
         tg.ready();
 
+        // Asosiy o'zgaruvchilar
         let allProducts = [];
         let cart = [];
         let currentProduct = null;
 
-        // Ma'lumotlarni Render serveridan tortib olish
+        // Render'dan ma'lumotlarni tortish
+        // DIQQAT: Agar sizning render ssilkangiz boshqacha bo'lsa, shuni o'zgartiring
+        const API_URL = 'https://omad-shop-1.onrender.com/api/products'; 
+
         async function loadProducts() {
             try {
-                // Diqqat: Bu yerda o'zingizning Render ssilkangiz turishi kerak
-                const res = await fetch('https://omad-shop-1.onrender.com/api/products');
+                const res = await fetch(API_URL);
                 allProducts = await res.json();
-                renderProducts();
+                
+                // Teskari tartibda chiqarish (Eng oxirgi qo'shilganlar birinchi turadi)
+                allProducts.reverse(); 
+                renderProducts(allProducts);
             } catch(e) {
-                document.getElementById('products-grid').innerHTML = '<p class="col-span-2 text-center text-red-500">Server bilan bog‘lanib bo‘lmadi.</p>';
+                document.getElementById('products-grid').innerHTML = `
+                    <div class="col-span-2 text-center text-red-500 mt-10 bg-red-50 p-4 rounded-2xl">
+                        <i class="fa-solid fa-triangle-exclamation text-3xl mb-2"></i>
+                        <p>Server bilan bog‘lanib bo‘lmadi.</p>
+                    </div>`;
             }
         }
 
-        function renderProducts() {
+        // Mahsulotlarni chizish
+        function renderProducts(products) {
             const grid = document.getElementById('products-grid');
-            if (allProducts.length === 0) {
-                grid.innerHTML = '<p class="col-span-2 text-center text-gray-500 mt-10">Hozircha mahsulot yo‘q</p>';
+            if (products.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-2 text-center text-gray-400 mt-16">
+                        <i class="fa-solid fa-box-open text-5xl mb-3 opacity-50"></i>
+                        <p class="font-medium text-lg">Hozircha mahsulot yo‘q</p>
+                    </div>`;
                 return;
             }
             
-            grid.innerHTML = allProducts.map(p => `
-                <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex flex-col" onclick="openModal(${p.id})">
-                    <img src="${p.img || 'https://via.placeholder.com/150'}" class="w-full h-32 object-contain rounded-xl bg-gray-50 mb-2">
-                    <div class="flex-1">
-                        <h3 class="text-sm font-semibold text-gray-800 leading-tight mb-1 line-clamp-2">${escapeHtml(p.name)}</h3>
+            grid.innerHTML = products.map(p => `
+                <div class="product-card card-bg rounded-2xl p-2.5 shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 flex flex-col justify-between cursor-pointer" onclick="openModal(${p.id})">
+                    <div class="bg-white rounded-xl mb-2 flex items-center justify-center h-36 overflow-hidden relative">
+                        <img src="${p.img || 'https://via.placeholder.com/150'}" onerror="this.src='https://via.placeholder.com/150'" class="w-full h-full object-contain">
+                        <div class="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-[10px] font-bold px-2 py-0.5 rounded border border-white border-opacity-20 backdrop-blur-sm">ID: ${p.id}</div>
                     </div>
-                    <div class="mt-2 text-blue-600 font-bold text-sm">${Number(p.price).toLocaleString()} so'm</div>
+                    <div>
+                        <h3 class="text-xs font-semibold leading-snug mb-1.5 line-clamp-2 min-h-[32px]">${escapeHtml(p.name)}</h3>
+                        <div class="flex justify-between items-end mt-1">
+                            <span class="text-blue-600 font-black text-sm">${Number(p.price).toLocaleString()} <span class="text-[10px] text-gray-400 font-medium">UZS</span></span>
+                            <button class="bg-blue-50 text-blue-600 w-7 h-7 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             `).join('');
         }
 
-        // Modal oynani ochish va yopish
+        // Qidiruv funksiyasi
+        function searchProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query) || p.id.toString() === query);
+            renderProducts(filtered);
+        }
+
+        // Modal oynani boshqarish
         function openModal(id) {
             currentProduct = allProducts.find(p => p.id === id);
             if (!currentProduct) return;
@@ -119,27 +190,39 @@
             document.getElementById('modalDesc').innerText = currentProduct.description || "Tafsilotlar kiritilmagan.";
             
             const modal = document.getElementById('productModal');
-            const modalContainer = modal.querySelector('.modal-container');
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            setTimeout(() => { modalContainer.classList.remove('translate-y-full'); }, 10);
+            const content = document.getElementById('modalContent');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // Kichik kechikish bilan animatsiyani ishga tushirish
+            setTimeout(() => {
+                content.classList.remove('translate-y-full');
+            }, 10);
             document.body.classList.add('modal-active');
+            
+            // Telefon tebranishi
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         }
 
         function closeModal() {
             const modal = document.getElementById('productModal');
-            const modalContainer = modal.querySelector('.modal-container');
-            modalContainer.classList.add('translate-y-full');
-            setTimeout(() => { modal.classList.add('opacity-0', 'pointer-events-none'); }, 300);
-            document.body.classList.remove('modal-active');
+            const content = document.getElementById('modalContent');
+            
+            content.classList.add('translate-y-full');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.classList.remove('modal-active');
+            }, 300);
         }
 
-        // Karzinka mantiqi
+        // Karzinka funksiyalari
         function addToCartFromModal() {
             if(currentProduct) {
                 cart.push(currentProduct);
                 updateCartUI();
                 closeModal();
-                tg.HapticFeedback.notificationOccurred('success'); // Vibratsiya
+                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }
         }
 
@@ -156,18 +239,23 @@
         }
 
         function openCart() {
-            // Bu yerda Click to'loviga o'tish yoki botga xabar yuborish mantiqi ishlaydi
-            tg.MainButton.text = "CLICK ORQALI TO'LASH";
+            // Asosiy telegram tugmasini chiqarish
+            tg.MainButton.setText("BUYURTMA BERISH");
             tg.MainButton.show();
+            
+            // Xaridor tugmani bossa nima bo'lishi
             tg.onEvent('mainButtonClicked', function() {
-                tg.sendData(JSON.stringify({action: 'checkout', items: cart}));
+                // Hozircha oddiy alert, keyin Click'ga ulaymiz
+                tg.showAlert("Tez orada Click to'lovi ulanadi!\nHozircha karzinkada " + cart.length + " ta mahsulot bor.");
             });
         }
 
         function escapeHtml(str) {
+            if (!str) return "";
             return str.replace(/[&<>]/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[m]));
         }
 
+        // Dastur ishga tushganda mahsulotlarni yuklash
         loadProducts();
     </script>
 </body>
