@@ -14,13 +14,12 @@ from aiogram.types import WebAppInfo
 import uuid
 
 # ========== KONFIGURATSIYA ==========
-API_TOKEN = "8353606263:AAFdwZSNdYmK5Qfaj8TAlmfj-RIG-JiuKpU"   # Sizning token
-ADMIN_ID = 797324958   # O‘z ID-raqamingizni yozing (raqam)
-WEB_APP_URL = "https://omad-shop-1.onrender.com"   # Frontend URL (Render sizga beradi)
+API_TOKEN = "8353606263:AAFdwZSNdYmK5Qfaj8TAlmfj-RIG-JiuKpU"
+ADMIN_ID = 797324958   # <-- O‘z Telegram ID-raqamingizni yozing
+WEB_APP_URL = "https://omad-shop-1.onrender.com"   # Frontend URL
 DATA_FILE = "products.json"
 STATIC_DIR = "static"
 
-# Papkani avtomatik yaratamiz
 os.makedirs(STATIC_DIR, exist_ok=True)
 
 # ========== GLOBAL ==========
