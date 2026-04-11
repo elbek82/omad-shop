@@ -10,9 +10,10 @@ from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from aiogram.utils import executor
 
+# ========== SOZLAMALAR ==========
 BOT_TOKEN = os.environ.get("BOT_TOKEN") 
-ADMIN_ID = 797324958
-WEB_APP_URL = "https://omad-shop.vercel.app"
+ADMIN_ID = 797324958   # O'z ID raqamingiz
+WEB_APP_URL = "https://omad-shop.vercel.app"   # VERCEL do'kon manzili
 DATA_FILE = "products.json"
 
 bot = Bot(token=BOT_TOKEN)
@@ -93,11 +94,12 @@ async def parse_universal(url, shop_type):
             print(f"Parse xato: {e}")
     return None
 
+# ========== BOT HANDLERLARI ==========
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     button = KeyboardButton("🛒 Do'konni ochish", web_app=WebAppInfo(url=WEB_APP_URL))
     markup = ReplyKeyboardMarkup(resize_keyboard=True).add(button)
-    await message.reply("Assalomu alaykum! AVTO 6707 do'koniga xush kelibsiz.\nLink yuboring.", reply_markup=markup)
+    await message.reply("Assalomu alaykum! AVTO 6707 do'koniga xush kelibsiz.\nUzum, Ozon yoki Wildberries linkini yuboring.", reply_markup=markup)
 
 @dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('/narx'))
 async def update_price(message: types.Message):
@@ -144,7 +146,6 @@ async def update_desc(message: types.Message):
                 return
     except: await message.reply("❌ Xato: /tavsif ID YANGI_MATN")
 
-# ===== YANGI KATEGORIYA BUYRUG'I =====
 @dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('/kat'))
 async def update_category(message: types.Message):
     try:
@@ -156,7 +157,7 @@ async def update_category(message: types.Message):
             if isinstance(p, dict) and p.get('id') == product_id:
                 p['category'] = new_cat
                 save_products(products)
-                await message.reply(f"✅ {product_id}-mahsulot kategoriyasi '{new_cat}' ga o'zgardi.")
+                await message.reply(f"✅ {product_id}-mahsulot '{new_cat}' kategoriyasiga o'tdi.")
                 return
         await message.reply("❌ Bunday ID topilmadi.")
     except: await message.reply("❌ Xato format. Misol: /kat 1 Asboblar")
@@ -180,7 +181,7 @@ async def handle_link(message: types.Message):
             "img": info.get('img', ''),
             "description": info.get('description', ''),
             "source": info.get('source', ''),
-            "category": "Boshqa" # <--- YANGI MAHSULOTLARGA BOSHIDA "Boshqa" DEB BERAMIZ
+            "category": "Boshqa" 
         }
         products.append(new_product)
         save_products(products)
@@ -191,6 +192,7 @@ async def handle_link(message: types.Message):
         else: await message.reply(caption)
         await wait_msg.delete()
 
+# ========== API VA SERVER QISMI ==========
 async def handle_api(request):
     products = load_products()
     return web.json_response(products, headers={'Access-Control-Allow-Origin': '*'})
@@ -207,7 +209,13 @@ async def run_api():
     port = int(os.environ.get("PORT", 10000))
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
+    print(f"✅ Server {port}-portda ishlayapti")
     await asyncio.Event().wait()
 
+# TUSHIB QOLGAN ENG MUHIM JOY MANA SHU EDI:
+async def main():
+    asyncio.create_task(run_api())
+    await dp.start_polling()
+
 if __name__ == "__main__":
-    asyncio.run(run_api())
+    asyncio.run(main())
