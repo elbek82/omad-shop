@@ -9,7 +9,7 @@ from telegram import Update, KeyboardButton, ReplyKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 # ========== KONFIG ==========
-BOT_TOKEN = "8353606263:AAFdwZSNdYmK5Qfaj8TAlmfj-RIG-JiuKpU"
+BOT_TOKEN = "8353606263:AAHImyDaiU8G18ZSxwiv9shAyZ8s29WEK3s"
 ADMIN_ID = 797324958  # O‘z ID-raqamingiz
 WEB_APP_URL = "https://omad-shop-1.onrender.com"
 DATA_FILE = "products.json"
