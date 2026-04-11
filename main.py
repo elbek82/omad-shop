@@ -9,7 +9,8 @@ from aiogram.types import WebAppInfo
 from aiogram.filters import CommandStart, Command
 
 # --- SOZLAMALAR ---
-API_TOKEN = 'BOT_TOKEN'
+API_TOKEN = os.getenv('BOT_TOKEN')
+bot = Bot(token=API_TOKEN)
 ADMIN_ID = 797324958
 WEB_APP_URL = "https://omad-shop.vercel.app"
 
