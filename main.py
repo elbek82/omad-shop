@@ -54,19 +54,21 @@ def get_uzum_info(url):
 
 # --- BOT BUYRUQLARI ---
 
-@dp.message(CommandStart())
-async def start(message: types.Message):
-    markup = types.ReplyKeyboardMarkup(
-        keyboard=[[types.KeyboardButton(text="🛒 Do'konni ochish", web_app=WebAppInfo(url=WEB_APP_URL))]],
-        resize_keyboard=True
-    )
-    msg = "Xush kelibsiz! Omad Savdo botiga marhamat."
-    if message.from_user.id == ADMIN_ID:
-        msg += "\n\n👨‍💻 **Admin menyusi:**\n🔹 Uzumdan qo'shish: Link yuboring\n🔹 Qo'lda qo'shish: `/add Nomi | Narxi | Rasm_linki`"
-    await message.answer(msg, reply_markup=markup, parse_mode="Markdown")
+# 1. AVVAL QO'LDA QO'SHISHNI TEKSHIRAMIZ
+@dp.message(F.from_user.id == ADMIN_ID, Command("add"))
+async def manual_add(message: types.Message):
+    try:
+        data = message.text.split("/add ")[1].split(" | ")
+        products = load_products()
+        item = {"id": len(products)+1, "name": data[0], "price": int(data[1]), "img": data[2]}
+        products.append(item)
+        save_products(products)
+        await message.answer("✅ Mahsulot qo'lda muvaffaqiyatli qo'shildi!")
+    except:
+        await message.answer("❌ Xato! Format: /add Nomi | Narxi | Rasm_linki")
 
-# Uzum linki yuborilganda
-@dp.message(F.from_user.id == ADMIN_ID, F.text.contains("uzum.uz"))
+# 2. KEYIN UZUM LINKINI TEKSHIRAMIZ (faqat /add bo'lmasa ishlaydi)
+@dp.message(F.from_user.id == ADMIN_ID, F.text.contains("uzum.uz"), ~F.text.startswith("/add"))
 async def parser_handler(message: types.Message):
     wait = await message.answer("🔄 Uzum Marketdan ma'lumot o'qilyapti...")
     info = get_uzum_info(message.text)
@@ -76,7 +78,7 @@ async def parser_handler(message: types.Message):
         info['id'] = len(products) + 1
         products.append(info)
         save_products(products)
-        await wait.edit_text(f"✅ Savatga qo'shildi!\n\n📦 **{info['name']}**\n💰 Narxi: {info['price']:,} so'm")
+        await wait.edit_text(f"✅ Savatga qo'shildi!\n\n📦 {info['name']}\n💰 Narxi: {info['price']:,} so'm")
     else:
         await wait.edit_text("❌ Kechirasiz, Uzumdan ma'lumotni olib bo'lmadi. Sayt bizni bloklagan bo'lishi mumkin.")
 
