@@ -11,8 +11,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from aiogram.utils import executor
 
 # ========== SOZLAMALAR ==========
-# DIQQAT: Githubingiz "Private" bo'lishi shart, yo'qsa token yana o'chib ketadi!
-BOT_TOKEN = "8353606263:AAFOZDP1AyIUpMzHyJ_rgLb1BK49T7vUkzk" # Shu yerga aniq tokeningizni yozing
+BOT_TOKEN = os.environ.get("BOT_TOKEN") 
 ADMIN_ID = 797324958   # O'z ID raqamingiz
 WEB_APP_URL = "https://omad-shop.vercel.app"   # VERCEL do'kon manzili
 DATA_FILE = "products.json"
@@ -46,7 +45,6 @@ async def parse_universal(url, shop_type):
     }
     async with aiohttp.ClientSession() as session:
         try:
-            # Ozon va WB uchun vaqtni ko'proq beramiz
             async with session.get(url, headers=headers, timeout=20) as resp:
                 if resp.status != 200: return None
                 html = await resp.text()
@@ -54,10 +52,8 @@ async def parse_universal(url, shop_type):
                 
                 name, price, img, desc = "", 0, "", ""
                 
-                # 1. Barcha saytlar uchun universal Meta Tag qidiruvi (Ism, rasm, ta'rif)
                 og_title = soup.find('meta', property='og:title')
                 if og_title: 
-                    # Sayt nomlarini ismdan olib tashlash (Masalan: "Termos - Ozon.ru da sotib oling" -> "Termos")
                     raw_name = og_title['content']
                     name = raw_name.split(' - ')[0].split(' | ')[0].split(' – ')[0].strip()
                 
@@ -67,7 +63,6 @@ async def parse_universal(url, shop_type):
                 og_desc = soup.find('meta', property='og:description')
                 if og_desc: desc = og_desc['content']
 
-                # 2. Uzum uchun maxsus aniq qidiruv (Narxni ham tortadi)
                 if shop_type == "uzum":
                     for script in soup.find_all('script', type='application/ld+json'):
                         try:
@@ -83,9 +78,8 @@ async def parse_universal(url, shop_type):
                                 break
                         except: pass
                 
-                # Narx topilmasa ham, mahsulot rasmi va nomi topilgan bo'lsa uni qaytaramiz
                 if name:
-                    if not desc: desc = f"AVTO 6707 uchun {shop_type.capitalize()} orqali yuklangan avto aksessuar."
+                    if not desc: desc = f"AVTO 6707 do'koni maxsus taklifi."
                     return {"name": name, "price": price, "img": img, "description": desc, "source": shop_type}
                     
         except Exception as e:
@@ -99,16 +93,44 @@ async def start(message: types.Message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True).add(button)
     await message.reply("Assalomu alaykum! AVTO 6707 do'koniga xush kelibsiz.\nAdmin: Uzum, Ozon, Wildberries yoki Yandex linkini yuboring.", reply_markup=markup)
 
+# YAngi: Narxni qo'lda o'zgartirish buyrug'i
+@dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('/narx'))
+async def update_price(message: types.Message):
+    try:
+        parts = message.text.split()
+        if len(parts) < 3:
+            await message.reply("❌ Xato format. Bunday yozing: /narx ID SUMMA\nMasalan: /narx 1 150000")
+            return
+            
+        product_id = int(parts[1])
+        new_price = int(parts[2])
+        
+        products = load_products()
+        found = False
+        for p in products:
+            if p['id'] == product_id:
+                p['price'] = new_price
+                found = True
+                break
+                
+        if found:
+            save_products(products)
+            await message.reply(f"✅ Zo'r! {product_id}-raqamli mahsulot narxi {new_price:,} so'm etib belgilandi.\nDo'konga kirib tekshirib ko'ring!")
+        else:
+            await message.reply("❌ Bunday ID raqamli mahsulot topilmadi.")
+    except Exception as e:
+        await message.reply("❌ Xatolik ketdi. ID va narx faqat raqamlardan iborat bo'lsin.")
+
 @dp.message_handler(lambda msg: msg.from_user.id == ADMIN_ID and msg.text.startswith('http'))
 async def handle_link(message: types.Message):
     url = message.text
     shop_type = check_url_type(url)
     
     if not shop_type:
-        await message.reply("❌ Noto'g'ri ssilka! Faqat Uzum, Ozon, Wildberries yoki Yandex Market ssilkalarini yuboring.")
+        await message.reply("❌ Noto'g'ri ssilka! Faqat Uzum, Ozon, Wildberries yoki Yandex ssilkalarini yuboring.")
         return
         
-    wait_msg = await message.reply(f"🔄 Mahsulot {shop_type.capitalize()} platformasidan yuklanmoqda...")
+    wait_msg = await message.reply(f"🔄 Yuklanmoqda ({shop_type.capitalize()})...")
     info = await parse_universal(url, shop_type)
     
     if info and info.get('name'):
@@ -125,8 +147,13 @@ async def handle_link(message: types.Message):
         products.append(new_product)
         save_products(products)
         
-        narx_matni = f"{new_product['price']:,} so'm" if new_product['price'] > 0 else "Narx aniqlanmadi (0 so'm)"
-        caption_text = f"✅ Magazinga qo‘shildi!\n🌐 Manba: {new_product['source'].capitalize()}\n\n🛍 {new_product['name']}\n💰 {narx_matni}"
+        # Narx xabarini shakllantirish
+        if new_product['price'] > 0:
+            narx_matni = f"{new_product['price']:,} so'm"
+        else:
+            narx_matni = f"0 so'm ⚠️\n\n✏️ Qo'lda narx qo'yish uchun quyidagini yozing:\n/narx {new_id} 150000"
+            
+        caption_text = f"✅ Magazinga qo‘shildi!\n🆔 Mahsulot ID: {new_id}\n🌐 Manba: {new_product['source'].capitalize()}\n\n🛍 {new_product['name']}\n💰 Narx: {narx_matni}"
         
         if new_product['img']:
             await message.reply_photo(photo=new_product['img'], caption=caption_text)
@@ -134,7 +161,7 @@ async def handle_link(message: types.Message):
             await message.reply(caption_text)
         await wait_msg.delete()
     else:
-        await wait_msg.edit_text(f"❌ Ma'lumot olinmadi. {shop_type.capitalize()} saytining botlardan himoyasi bunga yo'l qo'ymadi.")
+        await wait_msg.edit_text(f"❌ Ma'lumot olinmadi. {shop_type.capitalize()} sayti blokladi.")
 
 # ========== API SERVER ==========
 async def handle_api(request):
