@@ -2,631 +2,411 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AVTO6707 | Premium avto aksessuarlar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AVTO 6707</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f6f7f9; 
+            padding-bottom: 80px;
             -webkit-tap-highlight-color: transparent;
         }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f4f6fc;
-            color: #1a202c;
-            padding-bottom: 85px;
-        }
-
-        /* Sarlavha va qidiruv */
-        .header {
-            background: rgba(255,255,255,0.96);
-            backdrop-filter: blur(15px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 16px 18px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        .logo-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .logo {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #1e2a3a, #0f172a);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: -0.5px;
-        }
-        .logo span {
-            background: linear-gradient(135deg, #e53e3e, #c53030);
-            -webkit-background-clip: text;
-            background-clip: text;
-        }
-        .badge-premium {
-            background: #1e293b;
-            padding: 6px 12px;
-            border-radius: 40px;
-            color: #fbbf24;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .search-box {
-            background: #ffffff;
-            border-radius: 36px;
-            padding: 10px 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-            border: 1px solid #e2e8f0;
-        }
-        .search-box i {
-            color: #94a3b8;
-        }
-        .search-box input {
-            background: none;
-            border: none;
-            flex: 1;
-            font-size: 16px;
-            outline: none;
-            font-weight: 500;
-        }
-
-        /* Bannerlar */
-        .banner-area {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .banner {
-            background: linear-gradient(120deg, #0f172a, #1e293b);
-            border-radius: 28px;
-            padding: 18px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-            box-shadow: 0 15px 30px -12px rgba(0,0,0,0.2);
-        }
-        .banner:nth-child(2) {
-            background: linear-gradient(120deg, #2d3748, #1a202c);
-        }
-        .banner-text h3 {
-            font-size: 18px;
-            font-weight: 800;
-        }
-        .banner-text p {
-            font-size: 13px;
-            opacity: 0.8;
-            margin-top: 4px;
-        }
-        .banner-icon i {
-            font-size: 52px;
-            opacity: 0.25;
-        }
-
-        /* Kategoriyalar (horizontal scroll) */
-        .categories {
-            padding: 8px 16px;
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .categories::-webkit-scrollbar {
-            display: none;
-        }
-        .chip {
-            background: white;
-            padding: 8px 22px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 14px;
-            white-space: nowrap;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-        }
-        .chip.active {
-            background: #2563eb;
-            color: white;
-            border-color: #2563eb;
-            box-shadow: 0 8px 20px -6px #2563eb80;
-        }
-
-        /* Mahsulotlar grid */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            padding: 8px 16px 20px;
-        }
-        .product-card {
-            background: white;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.08);
-            transition: 0.2s;
-            position: relative;
-        }
-        .product-card:active {
-            transform: scale(0.97);
-        }
-        .img-box {
-            aspect-ratio: 1;
-            background: #fafcff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-        .img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .product-info {
-            padding: 12px 12px 16px;
-        }
-        .product-title {
-            font-weight: 700;
-            font-size: 14px;
-            line-height: 1.35;
-            height: 38px;
-            overflow: hidden;
-        }
-        .price {
-            font-weight: 800;
-            font-size: 16px;
-            margin-top: 8px;
-            color: #2563eb;
-        }
-        .quick-add {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: #2563eb;
-            width: 34px;
-            height: 34px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: 0 5px 12px #2563eb50;
-            cursor: pointer;
-        }
-
-        /* Pastki navigatsiya */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(255,255,255,0.96);
-            backdrop-filter: blur(20px);
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0 26px;
-            border-top: 1px solid #eef2ff;
-            z-index: 200;
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #94a3b8;
-            background: none;
-            border: none;
-        }
-        .nav-item.active {
-            color: #2563eb;
-        }
-        .nav-item i {
-            font-size: 24px;
-        }
-        .cart-badge {
-            background: #ef4444;
-            color: white;
-            border-radius: 20px;
-            padding: 0px 6px;
-            font-size: 10px;
-            margin-left: 6px;
-        }
-
-        /* Modal oyna (mahsulot detali) */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: flex;
-            align-items: flex-end;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.2s;
-        }
-        .modal.open {
-            visibility: visible;
-            opacity: 1;
-        }
-        .modal-content {
-            background: white;
-            width: 100%;
-            max-height: 85vh;
-            border-radius: 32px 32px 0 0;
-            overflow-y: auto;
-            padding: 24px 20px 30px;
-            animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-        .modal-img {
-            text-align: center;
-        }
-        .modal-img img {
-            width: 160px;
-            height: 160px;
-            object-fit: contain;
-        }
-        .reviews {
-            background: #f8fafc;
-            border-radius: 24px;
-            padding: 14px;
-            margin: 16px 0;
-        }
-        .review {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .stars {
-            color: #fbbf24;
-            font-size: 12px;
-        }
-
-        /* Savatcha paneli */
-        .cart-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: white;
-            border-radius: 28px 28px 0 0;
-            z-index: 300;
-            transform: translateY(100%);
-            transition: 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
-            max-height: 85vh;
-            overflow-y: auto;
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
-        }
-        .cart-panel.open {
-            transform: translateY(0);
-        }
-        .cart-header {
-            padding: 18px 20px;
-            font-weight: 800;
-            font-size: 20px;
-            border-bottom: 1px solid #eef2ff;
-            display: flex;
-            justify-content: space-between;
-        }
-        .cart-item {
-            display: flex;
-            gap: 12px;
-            padding: 14px 20px;
-            border-bottom: 1px solid #f0f2f5;
-        }
-        .cart-item-img {
-            width: 55px;
-            height: 55px;
-            background: #f9fafb;
-            border-radius: 14px;
-            object-fit: contain;
-        }
-        .payment-icons {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin: 12px 0;
-        }
-        .payment-icons i {
-            font-size: 28px;
-            color: #334155;
-        }
-        .btn-checkout {
-            background: #2563eb;
-            width: 100%;
-            border: none;
-            padding: 14px;
-            border-radius: 44px;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            margin-top: 12px;
-        }
-        .close-cart {
-            cursor: pointer;
-        }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Sariq va qora tema ranglari */
+        .bg-main-yellow { background-color: #FFD700; } /* Asosiy sariq */
+        .text-main-yellow { color: #FFD700; }
+        .bg-main-black { background-color: #111111; } /* Asosiy qora */
+        
+        .modal-active { overflow: hidden !important; }
+        .heart-active { color: #ff3b30; }
+        
+        /* Chiroyli soyalar */
+        .card-shadow { box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .bottom-nav-shadow { box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
     </style>
 </head>
-<body>
+<body class="text-gray-900">
 
-<header class="header">
-    <div class="logo-row">
-        <div class="logo">AVTO<span>6707</span></div>
-        <div class="badge-premium"><i class="fa-regular fa-gem"></i> Premium</div>
-    </div>
-    <div class="search-box">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="searchInput" placeholder="Aksessuar qidirish...">
-    </div>
-</header>
-
-<div class="banner-area">
-    <div class="banner">
-        <div class="banner-text"><h3>🏎️ Sport seriya</h3><p>Karbon aksessuarlar -20%</p></div>
-        <div class="banner-icon"><i class="fa-solid fa-car-side"></i></div>
-    </div>
-    <div class="banner">
-        <div class="banner-text"><h3>🔊 Premium audio</h3><p>Navigatsiya va dinamiklar</p></div>
-        <div class="banner-icon"><i class="fa-solid fa-headphones"></i></div>
-    </div>
-</div>
-
-<div class="categories" id="categoryList">
-    <div class="chip active" data-cat="all">Barchasi</div>
-    <div class="chip" data-cat="interior">Salon uchun</div>
-    <div class="chip" data-cat="exterior">Tashqi ko'rinish</div>
-    <div class="chip" data-cat="electronics">Elektronika</div>
-    <div class="chip" data-cat="protection">Himoya</div>
-</div>
-
-<div class="product-grid" id="productGrid"></div>
-
-<div class="bottom-nav">
-    <button class="nav-item active" data-nav="home"><i class="fa-solid fa-car"></i><span>Asosiy</span></button>
-    <button class="nav-item" data-nav="cart"><i class="fa-solid fa-basket-shopping"></i><span>Savatcha <span id="cartCount" class="cart-badge">0</span></span></button>
-    <button class="nav-item" data-nav="profile"><i class="fa-regular fa-user"></i><span>Profil</span></button>
-</div>
-
-<!-- Mahsulot modal -->
-<div id="productModal" class="modal">
-    <div class="modal-content">
-        <div style="text-align:right;"><i class="fa-regular fa-circle-xmark" style="font-size:26px;" onclick="closeModal()"></i></div>
-        <div class="modal-img"><img id="modalImg" src=""></div>
-        <h2 id="modalTitle" style="margin-top:12px;"></h2>
-        <div id="modalPrice" class="price" style="font-size:22px;"></div>
-        <p id="modalDesc" style="margin:12px 0; color:#475569;"></p>
-        <div class="reviews">
-            <div class="review"><i class="fa-regular fa-user"></i><div><b>Jasur N.</b><div class="stars">★★★★★</div><span>Zo‘r sifat, tez yetkazib berishdi</span></div></div>
-            <div class="review"><i class="fa-regular fa-user"></i><div><b>Dilshod B.</b><div class="stars">★★★★☆</div><span>Mashinamga juda mos keldi</span></div></div>
-        </div>
-        <button class="btn-checkout" onclick="addCurrentToCart()">➕ Savatchaga qo'shish</button>
-    </div>
-</div>
-
-<!-- Savatcha paneli -->
-<div id="cartPanel" class="cart-panel">
-    <div class="cart-header"><span>🛒 Savatcha</span><i class="fa-solid fa-xmark close-cart" onclick="toggleCart()"></i></div>
-    <div id="cartItemsList"></div>
-    <div style="padding:20px;">
-        <div class="payment-icons">
-            <i class="fa-brands fa-cc-visa"></i>
-            <i class="fa-brands fa-cc-mastercard"></i>
-            <i class="fa-solid fa-money-bill-wave"></i>
-            <span>Click / Payme</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; font-weight:800; margin:12px 0;">
-            <span>Jami:</span>
-            <span id="cartTotal">0 so'm</span>
-        </div>
-        <button id="checkoutBtn" class="btn-checkout">📦 Buyurtma berish</button>
-    </div>
-</div>
-
-<script>
-    let tg = window.Telegram.WebApp;
-    tg.expand();
-    tg.MainButton.setText("🛍️ Buyurtma qilish");
-    tg.MainButton.hide();
-
-    let allProducts = [];
-    let cart = [];
-    let currentProduct = null;
-    let activeCategory = "all";
-    let searchText = "";
-
-    const productGrid = document.getElementById("productGrid");
-    const searchInput = document.getElementById("searchInput");
-    const cartCountSpan = document.getElementById("cartCount");
-
-    function escapeHtml(str) {
-        if(!str) return '';
-        return str.replace(/[&<>]/g, function(m){
-            if(m==='&') return '&amp;';
-            if(m==='<') return '&lt;';
-            if(m==='>') return '&gt;';
-            return m;
-        });
-    }
-
-    function filterProducts() {
-        let filtered = [...allProducts];
-        if(activeCategory !== "all") {
-            filtered = filtered.filter(p => p.category === activeCategory);
-        }
-        if(searchText.trim()) {
-            filtered = filtered.filter(p => p.name.toLowerCase().includes(searchText.toLowerCase()));
-        }
-        return filtered;
-    }
-
-    function renderProducts() {
-        const filtered = filterProducts();
-        if(filtered.length === 0) {
-            productGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px;">🔍 Hech narsa topilmadi</div>`;
-            return;
-        }
-        productGrid.innerHTML = filtered.map(p => `
-            <div class="product-card" onclick="openModal(${p.id})">
-                <div class="img-box"><img src="${p.img || 'https://via.placeholder.com/300'}" onerror="this.src='https://via.placeholder.com/300'"></div>
-                <div class="product-info">
-                    <div class="product-title">${escapeHtml(p.name)}</div>
-                    <div class="price">${Number(p.price).toLocaleString()} so'm</div>
-                </div>
-                <div class="quick-add" onclick="event.stopPropagation(); addToCart(${p.id})"><i class="fa fa-plus"></i></div>
+    <header class="bg-white px-4 py-3 sticky top-0 z-30 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-main-black flex items-center justify-center text-main-yellow font-black text-xs border-2 border-main-yellow shadow-md">
+                6707
             </div>
-        `).join('');
-    }
+            <h1 class="font-black text-xl tracking-tight">AVTO 6707</h1>
+        </div>
+        <div class="flex gap-4">
+            <button class="text-xl text-gray-800"><i class="fa-regular fa-bell"></i></button>
+        </div>
+    </header>
 
-    function addToCart(id) {
-        const product = allProducts.find(p => p.id === id);
-        if(product) {
-            cart.push(product);
-            updateCartUI();
-            tg.HapticFeedback.impactOccurred('light');
-        }
-    }
+    <div class="bg-white px-4 pb-3">
+        <div class="relative">
+            <i class="fa-solid fa-search absolute left-4 top-3.5 text-gray-400"></i>
+            <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="Mahsulotlarni izlash..." 
+                class="w-full bg-gray-100 rounded-2xl py-3 pl-11 pr-4 outline-none focus:ring-2 focus:ring-main-yellow transition-all text-sm font-medium">
+        </div>
+    </div>
 
-    function updateCartUI() {
-        cartCountSpan.innerText = cart.length;
-        renderCartPanel();
-        if(cart.length > 0) tg.MainButton.show(); else tg.MainButton.hide();
-    }
+    <div class="px-4 mt-4">
+        <div class="bg-main-black rounded-2xl p-5 relative overflow-hidden flex items-center shadow-lg">
+            <div class="relative z-10 w-2/3">
+                <span class="bg-main-yellow text-black text-[10px] font-bold px-2 py-1 rounded-md uppercase">Yangi</span>
+                <h2 class="text-white font-black text-lg mt-2 leading-tight">Barcha aksessuarlarga 20% chegirma!</h2>
+            </div>
+            <i class="fa-solid fa-car text-6xl absolute -right-2 -bottom-2 text-gray-700 opacity-50 transform rotate-12"></i>
+        </div>
+    </div>
 
-    function renderCartPanel() {
-        const container = document.getElementById("cartItemsList");
-        if(!cart.length) {
-            container.innerHTML = `<div style="padding:20px; text-align:center;">Savatcha bo‘sh</div>`;
-            document.getElementById("cartTotal").innerText = "0 so'm";
-            return;
-        }
-        let total = 0;
-        let html = "";
-        cart.forEach((item, idx) => {
-            total += Number(item.price);
-            html += `
-                <div class="cart-item">
-                    <img class="cart-item-img" src="${item.img || 'https://via.placeholder.com/55'}" onerror="this.src='https://via.placeholder.com/55'">
-                    <div style="flex:1">
-                        <div style="font-weight:700">${escapeHtml(item.name)}</div>
-                        <div>${Number(item.price).toLocaleString()} so'm</div>
-                    </div>
-                    <button onclick="removeCartItem(${idx})" style="background:none; border:none; color:#ef4444;"><i class="fa-regular fa-trash-can"></i></button>
+    <div class="px-4 mt-6 mb-2">
+        <h3 class="font-bold text-lg mb-3">Kategoriyalar</h3>
+        <div class="flex gap-4 overflow-x-auto hide-scroll pb-2">
+            <div class="flex flex-col items-center gap-1 min-w-[70px]">
+                <div class="w-14 h-14 rounded-full bg-yellow-100 flex items-center justify-center text-main-yellow text-2xl mb-1 shadow-sm"><i class="fa-solid fa-key"></i></div>
+                <span class="text-xs font-medium text-center">Pult g'ilof</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 min-w-[70px]">
+                <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm"><i class="fa-solid fa-pump-soap"></i></div>
+                <span class="text-xs font-medium text-center">Tozalash</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 min-w-[70px]">
+                <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <span class="text-xs font-medium text-center">Xavfsizlik</span>
+            </div>
+            <div class="flex flex-col items-center gap-1 min-w-[70px]">
+                <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 text-2xl mb-1 shadow-sm"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                <span class="text-xs font-medium text-center">Asboblar</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="px-4 mt-4">
+        <h3 class="font-bold text-lg mb-3">Ommabop mahsulotlar</h3>
+        <div id="products-grid" class="grid grid-cols-2 gap-3">
+            <p class="col-span-2 text-center text-gray-400 my-10"><i class="fas fa-spinner fa-spin text-3xl"></i><br>Yuklanmoqda...</p>
+        </div>
+    </div>
+
+    <div id="productModal" class="fixed inset-0 z-50 hidden items-end justify-center">
+        <div class="absolute inset-0 bg-black bg-opacity-50 transition-opacity" onclick="closeModal()"></div>
+        <div class="bg-white w-full h-[90vh] rounded-t-[24px] z-50 flex flex-col transform transition-transform translate-y-full" id="modalContent">
+            <div class="flex justify-center pt-3 pb-1"><div class="w-12 h-1.5 bg-gray-300 rounded-full"></div></div>
+            
+            <div class="overflow-y-auto px-4 pb-20 flex-1 hide-scroll">
+                <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 rounded-full text-gray-600 flex justify-center items-center"><i class="fa-solid fa-xmark"></i></button>
+                
+                <div class="w-full h-64 bg-gray-50 rounded-2xl flex items-center justify-center mt-2 p-2">
+                    <img id="modalImg" src="" class="max-h-full object-contain mix-blend-multiply">
                 </div>
-            `;
-        });
-        container.innerHTML = html;
-        document.getElementById("cartTotal").innerText = total.toLocaleString() + " so'm";
-    }
+                
+                <div class="mt-4 flex justify-between items-start">
+                    <div>
+                        <p id="modalPrice" class="text-2xl font-black text-gray-900 leading-none mb-1">0 so'm</p>
+                        <h2 id="modalTitle" class="text-lg font-bold text-gray-700 leading-tight">Nomi</h2>
+                    </div>
+                </div>
 
-    window.removeCartItem = (idx) => {
-        cart.splice(idx,1);
-        updateCartUI();
-    };
+                <div class="flex items-center gap-1 mt-2 text-sm">
+                    <i class="fa-solid fa-star text-main-yellow"></i>
+                    <i class="fa-solid fa-star text-main-yellow"></i>
+                    <i class="fa-solid fa-star text-main-yellow"></i>
+                    <i class="fa-solid fa-star text-main-yellow"></i>
+                    <i class="fa-solid fa-star-half-stroke text-main-yellow"></i>
+                    <span class="text-gray-500 ml-1 font-medium">4.8 (124 izoh)</span>
+                </div>
+                
+                <h3 class="font-bold mt-6 mb-2 text-gray-800">Tavsif</h3>
+                <p id="modalDesc" class="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl">Ma'lumot.</p>
 
-    window.openModal = (id) => {
-        const p = allProducts.find(p => p.id === id);
-        if(p) {
-            currentProduct = p;
-            document.getElementById("modalImg").src = p.img || 'https://via.placeholder.com/160';
-            document.getElementById("modalTitle").innerText = p.name;
-            document.getElementById("modalPrice").innerHTML = Number(p.price).toLocaleString() + " so'm";
-            document.getElementById("modalDesc").innerHTML = p.description || "Yuqori sifatli avtomobil aksessuari, 12 oy kafolat bilan.";
-            document.getElementById("productModal").classList.add("open");
-        }
-    };
-    window.closeModal = () => {
-        document.getElementById("productModal").classList.remove("open");
-    };
-    window.addCurrentToCart = () => {
-        if(currentProduct) {
-            addToCart(currentProduct.id);
-            closeModal();
-        }
-    };
-    window.toggleCart = () => {
-        document.getElementById("cartPanel").classList.toggle("open");
-        renderCartPanel();
-    };
+                <h3 class="font-bold mt-6 mb-3 text-gray-800">Xaridorlar izohi</h3>
+                <div class="space-y-3">
+                    <div class="bg-gray-50 p-3 rounded-xl">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-sm">Sardor B.</span>
+                            <span class="text-[10px] text-gray-400">Kecha</span>
+                        </div>
+                        <div class="flex text-main-yellow text-[10px] mb-1"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <p class="text-xs text-gray-600">Sifati juda zo'r ekan, mashinamga chotki tushdi. Rahmat!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-100 flex gap-3">
+                <button onclick="toggleModalFavorite()" class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-xl text-gray-400">
+                    <i id="modalHeartBtn" class="fa-regular fa-heart"></i>
+                </button>
+                <button onclick="addToCartFromModal()" class="flex-1 bg-main-yellow text-black font-black text-lg rounded-2xl shadow-lg active:scale-95 transition-transform">
+                    Karzinkaga qo'shish
+                </button>
+            </div>
+        </div>
+    </div>
 
-    // Kategoriya va qidiruv
-    document.querySelectorAll(".chip").forEach(chip => {
-        chip.addEventListener("click", () => {
-            document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-            chip.classList.add("active");
-            activeCategory = chip.getAttribute("data-cat");
-            renderProducts();
-        });
-    });
-    searchInput.addEventListener("input", (e) => {
-        searchText = e.target.value;
-        renderProducts();
-    });
+    <div id="checkoutModal" class="fixed inset-0 z-50 hidden items-end justify-center">
+        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="closeCheckout()"></div>
+        <div class="bg-white w-full h-[80vh] rounded-t-[24px] z-50 flex flex-col p-5 transform transition-transform translate-y-full" id="checkoutContent">
+            <h2 class="text-xl font-black mb-4 border-b pb-3">Buyurtmani rasmiylashtirish</h2>
+            
+            <div class="overflow-y-auto hide-scroll flex-1 space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">To'liq ismingiz</label>
+                    <input type="text" id="custName" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-main-yellow" placeholder="Alisher Vahobov">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Telefon raqamingiz <span class="text-red-500">*</span></label>
+                    <input type="tel" id="custPhone" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-main-yellow font-medium" placeholder="+998 90 123 45 67">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Yetkazib berish manzili <span class="text-red-500">*</span></label>
+                    <textarea id="custAddress" rows="3" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-main-yellow text-sm" placeholder="Viloyat, shahar, ko'cha, uy raqami..."></textarea>
+                </div>
+                
+                <div class="bg-gray-100 p-4 rounded-xl mt-4">
+                    <div class="flex justify-between text-sm font-bold mb-2"><span>Jami to'lov:</span> <span id="checkoutTotal" class="text-main-black text-lg">0 so'm</span></div>
+                    <p class="text-[10px] text-gray-500 text-center">* Tez orada Click orqali to'lov ulanadi.</p>
+                </div>
+            </div>
 
-    // Navigatsiya
-    document.querySelectorAll(".nav-item").forEach(btn => {
-        btn.addEventListener("click", () => {
-            if(btn.getAttribute("data-nav") === "cart") {
-                toggleCart();
-            } else if(btn.getAttribute("data-nav") === "home") {
-                document.getElementById("cartPanel").classList.remove("open");
+            <button onclick="submitOrder()" class="w-full bg-main-black text-main-yellow font-black text-lg rounded-2xl shadow-lg py-4 mt-4">
+                Buyurtmani tasdiqlash
+            </button>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 w-full bg-white bottom-nav-shadow flex justify-around items-center py-3 px-2 z-40 rounded-t-[20px]">
+        <button class="flex flex-col items-center gap-1 text-main-black w-16">
+            <i class="fa-solid fa-house text-xl"></i>
+            <span class="text-[10px] font-bold">Asosiy</span>
+        </button>
+        <button onclick="showFavoritesOnly()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
+            <i class="fa-solid fa-heart text-xl"></i>
+            <span class="text-[10px] font-bold">Sevimlilar</span>
+        </button>
+        
+        <button onclick="openCheckout()" class="relative flex flex-col items-center justify-center w-14 h-14 -mt-6 bg-main-yellow text-main-black rounded-full shadow-lg border-4 border-[#f6f7f9] transform active:scale-95">
+            <i class="fa-solid fa-cart-shopping text-xl"></i>
+            <div id="cartBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex justify-center items-center rounded-full hidden">0</div>
+        </button>
+
+        <button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
+            <i class="fa-solid fa-box text-xl"></i>
+            <span class="text-[10px] font-bold">Buyurtma</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-900 w-16 transition-colors">
+            <i class="fa-solid fa-user text-xl"></i>
+            <span class="text-[10px] font-bold">Profil</span>
+        </button>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        let allProducts = [];
+        let cart = [];
+        let favorites = []; 
+        let currentProduct = null;
+
+        // DIQQAT: Render ssilkani tekshiring!
+        const API_URL = 'https://omad-shop-1.onrender.com/api/products'; 
+
+        async function loadProducts() {
+            try {
+                const res = await fetch(API_URL);
+                allProducts = await res.json();
+                allProducts.reverse(); // Yangilari birinchi chiqadi
+                renderProducts(allProducts);
+            } catch(e) {
+                document.getElementById('products-grid').innerHTML = '<p class="col-span-2 text-center text-red-500">Ulanish xatosi!</p>';
             }
-            document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
-            btn.classList.add("active");
-        });
-    });
-
-    // API dan mahsulotlarni olish
-    async function fetchProducts() {
-        try {
-            const res = await fetch('/api/products');
-            if(!res.ok) throw new Error();
-            const data = await res.json();
-            allProducts = data.map(p => ({...p, id: p.id, price: Number(p.price), category: p.category || "interior"}));
-            renderProducts();
-        } catch(e) {
-            productGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center;">⚠️ Server bilan bog‘lanib bo‘lmadi</div>`;
         }
-    }
 
-    // Buyurtma berish
-    document.getElementById("checkoutBtn").addEventListener("click", () => {
-        if(!cart.length) {
-            tg.showPopup({title:"Savatcha bo'sh", message:"Mahsulot qo'shing", buttons:[{type:"ok"}]});
-            return;
+        function toggleFav(id, event) {
+            event.stopPropagation(); // Karta ochilib ketmasligi uchun
+            if(favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+            } else {
+                favorites.push(id);
+                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            }
+            renderProducts(allProducts); // Qayta chizish
         }
-        tg.sendData(JSON.stringify({action:"order", items: cart.map(i=>({id:i.id, name:i.name, price:i.price}))}));
-        tg.showPopup({title:"Buyurtma qabul qilindi!", message:"Tez orada bog'lanamiz", buttons:[{type:"ok"}]});
-        cart = [];
-        updateCartUI();
-        toggleCart();
-    });
 
-    tg.onEvent("mainButtonClicked", () => {
-        document.getElementById("checkoutBtn").click();
-    });
+        function renderProducts(products) {
+            const grid = document.getElementById('products-grid');
+            if (products.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 text-center text-gray-400 my-10">Mahsulot topilmadi</p>';
+                return;
+            }
+            
+            grid.innerHTML = products.map(p => {
+                const isFav = favorites.includes(p.id);
+                const heartClass = isFav ? "fa-solid text-red-500" : "fa-regular text-gray-300";
+                
+                return `
+                <div class="bg-white rounded-[20px] p-2.5 card-shadow flex flex-col justify-between cursor-pointer relative" onclick="openModal(${p.id})">
+                    <button onclick="toggleFav(${p.id}, event)" class="absolute top-3 right-3 z-10 w-7 h-7 bg-white bg-opacity-80 rounded-full flex justify-center items-center shadow-sm">
+                        <i class="${heartClass} text-sm transition-colors"></i>
+                    </button>
+                    
+                    <div class="bg-gray-50 rounded-xl mb-2 flex items-center justify-center h-36 overflow-hidden">
+                        <img src="${p.img || 'https://via.placeholder.com/150'}" class="max-w-full max-h-full object-contain mix-blend-multiply">
+                    </div>
+                    <div>
+                        <h3 class="text-[13px] font-bold text-gray-800 leading-tight mb-1.5 line-clamp-2 h-8">${p.name}</h3>
+                        <div class="flex items-center gap-1 mb-2 text-[10px] text-gray-400 font-medium">
+                            <i class="fa-solid fa-star text-main-yellow"></i> 4.8
+                        </div>
+                        <div class="flex justify-between items-end">
+                            <span class="text-main-black font-black text-sm">${Number(p.price).toLocaleString()} <span class="text-[10px]">so'm</span></span>
+                            <button class="bg-main-yellow text-black w-7 h-7 rounded-full flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-cart-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
 
-    fetchProducts();
-</script>
+        function openModal(id) {
+            currentProduct = allProducts.find(p => p.id === id);
+            if (!currentProduct) return;
+
+            document.getElementById('modalImg').src = currentProduct.img;
+            document.getElementById('modalTitle').innerText = currentProduct.name;
+            document.getElementById('modalPrice').innerText = Number(currentProduct.price).toLocaleString() + " so'm";
+            document.getElementById('modalDesc').innerText = currentProduct.description || "Tafsilotlar yo'q.";
+            
+            // Like holatini tekshirish
+            const heartBtn = document.getElementById('modalHeartBtn');
+            if(favorites.includes(id)) {
+                heartBtn.className = "fa-solid fa-heart text-red-500";
+            } else {
+                heartBtn.className = "fa-regular fa-heart";
+            }
+            
+            const modal = document.getElementById('productModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => content.classList.remove('translate-y-full'), 10);
+            document.body.classList.add('modal-active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('productModal');
+            const content = document.getElementById('modalContent');
+            content.classList.add('translate-y-full');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.classList.remove('modal-active');
+            }, 300);
+        }
+
+        function toggleModalFavorite() {
+            if(!currentProduct) return;
+            const heartBtn = document.getElementById('modalHeartBtn');
+            if(favorites.includes(currentProduct.id)) {
+                favorites = favorites.filter(id => id !== currentProduct.id);
+                heartBtn.className = "fa-regular fa-heart transition-colors";
+            } else {
+                favorites.push(currentProduct.id);
+                heartBtn.className = "fa-solid fa-heart text-red-500 transition-colors";
+                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            }
+            renderProducts(allProducts); // orqa fonni yangilash
+        }
+
+        function addToCartFromModal() {
+            if(currentProduct) {
+                cart.push(currentProduct);
+                updateCartBadge();
+                closeModal();
+                if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cartBadge');
+            if (cart.length > 0) {
+                badge.innerText = cart.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Qidiruv
+        function searchProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allProducts.filter(p => p.name.toLowerCase().includes(query));
+            renderProducts(filtered);
+        }
+
+        // Faqat sevimlilarni ko'rsatish
+        function showFavoritesOnly() {
+            const favProducts = allProducts.filter(p => favorites.includes(p.id));
+            renderProducts(favProducts);
+        }
+
+        // CHECKOUT (Buyurtma Formasi)
+        function openCheckout() {
+            if(cart.length === 0) {
+                tg.showAlert("Karzinkangiz bo'sh. Xarid qilish uchun mahsulot qo'shing!");
+                return;
+            }
+            
+            let total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+            document.getElementById('checkoutTotal').innerText = total.toLocaleString() + " so'm";
+            
+            const modal = document.getElementById('checkoutModal');
+            const content = document.getElementById('checkoutContent');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => content.classList.remove('translate-y-full'), 10);
+            document.body.classList.add('modal-active');
+        }
+
+        function closeCheckout() {
+            const modal = document.getElementById('checkoutModal');
+            const content = document.getElementById('checkoutContent');
+            content.classList.add('translate-y-full');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.classList.remove('modal-active');
+            }, 300);
+        }
+
+        function submitOrder() {
+            const phone = document.getElementById('custPhone').value;
+            const address = document.getElementById('custAddress').value;
+            
+            if(!phone || !address) {
+                tg.showAlert("Iltimos, telefon raqam va manzilni to'liq kiriting!");
+                return;
+            }
+
+            // Ma'lumotlarni Telegram botga jo'natish
+            let orderData = {
+                action: 'new_order',
+                phone: phone,
+                address: address,
+                items: cart
+            };
+            
+            tg.sendData(JSON.stringify(orderData));
+            tg.close(); // Web appni yopamiz (botga xabar ketadi)
+        }
+
+        loadProducts();
+    </script>
 </body>
 </html>
