@@ -11,7 +11,6 @@ from aiogram.filters import CommandStart
 
 API_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
-WEB_APP_URL = os.getenv("WEB_APP_URL", "https://example.com")
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
@@ -32,7 +31,7 @@ async def save_products(data):
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
-# ------------------ UNIVERSAL PARSER ------------------
+# ------------------ NETWORK ------------------
 async def fetch_html(url):
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -44,7 +43,45 @@ async def fetch_html(url):
                 return None
             return await resp.text()
 
+async def download_image(url):
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=20) as resp:
+                if resp.status == 200:
+                    return await resp.read()
+    except:
+        return None
+    return None
 
+# ------------------ UZUM PARSER (PRO) ------------------
+def extract_uzum(soup):
+    try:
+        script = soup.find("script", string=re.compile("__INITIAL_STATE__"))
+        if not script:
+            return None
+
+        match = re.search(r'window\\.__INITIAL_STATE__\\s*=\\s*(\\{.*?\\});', script.string, re.DOTALL)
+        if not match:
+            return None
+
+        data = json.loads(match.group(1))
+        product = data.get('product', {}).get('payload', {}).get('data', {})
+
+        photos = product.get("photos", [])
+        img = None
+        if photos:
+            img = photos[0].get("high") or photos[0].get("low")
+
+        return {
+            "name": product.get("title"),
+            "price": product.get("sellPrice") or product.get("lowPrice") or 0,
+            "img": img
+        }
+    except Exception as e:
+        print("UZUM ERROR:", e)
+        return None
+
+# ------------------ UNIVERSAL PARSER ------------------
 def extract_json_ld(soup):
     scripts = soup.find_all("script", type="application/ld+json")
     for script in scripts:
@@ -70,7 +107,7 @@ def extract_meta(soup):
     img = get("og:image")
     price_text = get("product:price:amount")
 
-    price = int(re.sub(r"\D", "", price_text)) if price_text else 0
+    price = int(re.sub(r"\\D", "", price_text)) if price_text else 0
 
     return {"name": name, "price": price, "img": img}
 
@@ -82,12 +119,18 @@ async def parse_product(url):
 
     soup = BeautifulSoup(html, "html.parser")
 
-    # 1. JSON-LD (best universal method)
+    # 1. Uzum maxsus
+    if "uzum.uz" in url:
+        data = extract_uzum(soup)
+        if data:
+            return data
+
+    # 2. JSON-LD universal
     data = extract_json_ld(soup)
     if data and data.get("name"):
         return data
 
-    # 2. Meta fallback
+    # 3. META fallback
     data = extract_meta(soup)
     if data.get("name"):
         return data
@@ -97,11 +140,7 @@ async def parse_product(url):
 # ------------------ BOT ------------------
 @dp.message(CommandStart())
 async def start(message: types.Message):
-    markup = types.ReplyKeyboardMarkup(
-        keyboard=[[types.KeyboardButton(text="🛒 Open Shop")]],
-        resize_keyboard=True
-    )
-    await message.answer("Send product link (any site)", reply_markup=markup)
+    await message.answer("Send product link (Uzum, Amazon, etc)")
 
 
 @dp.message(F.from_user.id == ADMIN_ID)
@@ -114,7 +153,7 @@ async def handle_link(message: types.Message):
     try:
         info = await parse_product(message.text)
 
-        if not info:
+        if not info or not info.get("name"):
             await wait.edit_text("❌ Could not parse this site")
             return
 
@@ -130,10 +169,18 @@ async def handle_link(message: types.Message):
         products.append(product)
         await save_products(products)
 
-        await message.answer_photo(
-            photo=product["img"],
-            caption=f"✅ Added\n\n{product['name']}\n💰 {product['price']}"
-        )
+        img_bytes = await download_image(product["img"]) if product.get("img") else None
+
+        if img_bytes:
+            await message.answer_photo(
+                photo=img_bytes,
+                caption=f"✅ Added\n\n{product['name']}\n💰 {product['price']}"
+            )
+        else:
+            await message.answer(
+                f"✅ Added (no image)\n\n{product['name']}\n💰 {product['price']}"
+            )
+
         await wait.delete()
 
     except Exception as e:
