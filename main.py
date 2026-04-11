@@ -21,16 +21,26 @@ LOCK = asyncio.Lock()
 
 # ------------------ STORAGE ------------------
 async def load_products():
+    print("📥 LOAD PRODUCTS ISHLADI")
     if not os.path.exists(DATA_FILE):
+        print("📁 FILE TOPILMADI, YANGI RO'YXAT QAYTARILDI")
         return []
     async with LOCK:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            print("📦 LOAD DATA:", data)
+            return data
 
-async def save_products(data):
-    async with LOCK:
+
+def save_products(data):
+    print("💾 SAVE PRODUCTS ISHLADI")
+    print("📦 SAVE DATA:", data)
+    try:
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
+        print("✅ DATA SAQLANDI")
+    except Exception as e:
+        print("❌ SAVE ERROR:", e)
 
 # ------------------ NETWORK ------------------
 async def fetch_html(url):
