@@ -296,71 +296,64 @@
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.MainButton.setText("BUYURTMANI TASDIQLASH");
-        tg.MainButton.setParams({color: '#1a73e8'});
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.MainButton.setText("BUYURTMANI RASMIYLASHTIRISH");
+    tg.MainButton.setParams({color: '#7000ff'});
 
-        let products = [];
-        let cart = [];
+    let products = [];
+    let cart = [];
 
-        async function fetchProducts() {
-            try {
-                const response = await fetch('https://omad-shop-1.onrender.com/api/products');
-                products = await response.json();
-                renderProducts();
-            } catch (error) {
-                console.error("Xatolik yuklashda:", error);
-                document.getElementById('product-list').innerHTML = "<p style='padding:20px'>Server bilan ulanishda xato...</p>";
-            }
+    // BOTDAN MA'LUMOT OLISH
+    async function fetchProducts() {
+        try {
+            const response = await fetch('https://omad-shop-1.onrender.com/api/products');
+            products = await response.json();
+            renderProducts();
+        } catch (error) {
+            console.error("Xatolik:", error);
         }
+    }
 
-        function renderProducts() {
-            const list = document.getElementById('product-list');
-            if (!list) return;
-            
-            if (products.length === 0) {
-                list.innerHTML = "<p style='padding: 20px; text-align:center; grid-column: 1/3;'>Hozircha mahsulot yo'q.</p>";
-                return;
-            }
+    // MAHSULOTLARNI CHIZISH
+    function renderProducts() {
+        const list = document.getElementById('product-list');
+        if (!list) return;
 
-            list.innerHTML = products.map(p => `
-                <div class="product-card">
-                    <div class="product-image-container">
-    <img src="${p.img}" 
-         class="product-image" 
-         alt="${p.name}"
-         onerror="this.onerror=null; this.src='https://via.placeholder.com/150';">
-</div>
-                    <div class="product-info">
-                        <div class="product-title">${p.name}</div>
-                        <div class="product-price">${Number(p.price).toLocaleString()} so'm</div>
-                    </div>
-                    <div class="add-to-cart" onclick="addToCart(${p.id})">
-                        <i class="fa fa-plus"></i>
-                    </div>
+        list.innerHTML = products.map(p => `
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="${p.img}" 
+                         class="product-image" 
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/300x300?text=Rasm+Topilmadi';">
                 </div>
-            `).join('');
+                <div class="product-info">
+                    <div class="product-title">${p.name}</div>
+                    <div class="product-price">${Number(p.price).toLocaleString()} so'm</div>
+                </div>
+                <div class="add-to-cart" onclick="addToCart(${p.id})">
+                    <i class="fa fa-plus"></i>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addToCart(id) {
+        const product = products.find(p => p.id === id);
+        if (product) {
+            cart.push(product);
+            document.getElementById('cart-count').innerText = cart.length;
+            if (!tg.MainButton.isVisible) tg.MainButton.show();
+            tg.HapticFeedback.impactOccurred('medium');
         }
+    }
 
-        function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            if (product) {
-                cart.push(product);
-                document.getElementById('cart-count').innerText = cart.length;
-                
-                if (!tg.MainButton.isVisible) {
-                    tg.MainButton.show();
-                }
-                tg.HapticFeedback.notificationOccurred('success');
-            }
-        }
+    tg.onEvent('mainButtonClicked', function() {
+        tg.sendData(JSON.stringify(cart));
+    });
 
-        tg.onEvent('mainButtonClicked', function() {
-            tg.sendData(JSON.stringify(cart));
-        });
-
-        fetchProducts();
-    </script>
-</body>
+    // ISHGA TUSHIRISH
+    fetchProducts();
+</script>
+    </body>
 </html>
