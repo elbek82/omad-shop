@@ -1,56 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AVTO6707</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AVTO 6707</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: system-ui; padding: 16px; background: #f5f5f5; margin: 0; }
-        .product { background: white; border-radius: 16px; padding: 12px; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .product img { width: 70px; height: 70px; object-fit: contain; border-radius: 12px; background: #f9f9f9; }
-        .info { flex: 1; }
-        .name { font-weight: 600; margin-bottom: 6px; }
-        .price { color: #1a73e8; font-weight: bold; }
+        body { background-color: #f3f4f6; padding-bottom: 80px; -webkit-tap-highlight-color: transparent; }
+        .modal { transition: opacity 0.25s ease; }
+        body.modal-active { overflow-x: hidden; overflow-y: hidden !important; }
+        .star-active { color: #fbbf24; }
+        .star-inactive { color: #d1d5db; }
     </style>
 </head>
-<body>
-    <h1 style="margin-top: 0;">AVTO6707</h1>
-    <div id="products">Yuklanmoqda...</div>
+<body class="text-gray-800 antialiased">
+
+    <header class="bg-gray-900 text-white p-4 sticky top-0 z-10 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold tracking-wider"><i class="fa-solid fa-car-side mr-2"></i>AVTO 6707</h1>
+        <div class="flex gap-4 text-xl">
+            <button onclick="toggleFavorites()"><i class="fa-regular fa-heart"></i></button>
+        </div>
+    </header>
+
+    <div class="px-4 py-3 overflow-x-auto whitespace-nowrap hide-scroll">
+        <button class="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold mr-2">Barchasi</button>
+        <button class="bg-white border border-gray-300 px-4 py-1 rounded-full text-sm mr-2">Pult g'iloflari</button>
+        <button class="bg-white border border-gray-300 px-4 py-1 rounded-full text-sm">Favqulodda</button>
+    </div>
+
+    <div id="products-grid" class="grid grid-cols-2 gap-3 p-4">
+        <p class="col-span-2 text-center text-gray-500 mt-10"><i class="fas fa-spinner fa-spin text-2xl"></i><br>Yuklanmoqda...</p>
+    </div>
+
+    <div id="productModal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-end justify-center z-50">
+        <div class="modal-overlay absolute w-full h-full bg-black bg-opacity-50" onclick="closeModal()"></div>
+        <div class="modal-container bg-white w-full h-5/6 rounded-t-3xl shadow-lg z-50 overflow-y-auto transform transition-transform duration-300 translate-y-full">
+            <div class="p-5">
+                <button onclick="closeModal()" class="float-right text-gray-500 text-2xl">&times;</button>
+                <img id="modalImg" src="" class="w-full h-64 object-contain rounded-xl mb-4 bg-gray-50">
+                <h2 id="modalTitle" class="text-2xl font-bold mb-2">Mahsulot Nomi</h2>
+                
+                <div class="flex items-center mb-3 text-lg">
+                    <i class="fa-solid fa-star star-active"></i>
+                    <i class="fa-solid fa-star star-active"></i>
+                    <i class="fa-solid fa-star star-active"></i>
+                    <i class="fa-solid fa-star star-active"></i>
+                    <i class="fa-regular fa-star star-inactive"></i>
+                    <span class="text-sm text-gray-500 ml-2">(4.0)</span>
+                </div>
+
+                <p id="modalPrice" class="text-blue-600 text-2xl font-black mb-4">0 so'm</p>
+                <h3 class="font-bold text-gray-700 mb-1">Tavsifi:</h3>
+                <p id="modalDesc" class="text-gray-600 text-sm mb-6 leading-relaxed">Bu yerda mahsulot haqida ma'lumot bo'ladi.</p>
+                
+                <button onclick="addToCartFromModal()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg active:bg-blue-700">
+                    <i class="fa-solid fa-cart-plus mr-2"></i> Karzinkaga qo'shish
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-4 left-0 right-0 px-4 z-40">
+        <button id="mainCartBtn" onclick="openCart()" class="w-full bg-gray-900 text-white p-4 rounded-2xl shadow-xl flex justify-between items-center hidden">
+            <span class="font-bold"><i class="fa-solid fa-cart-shopping mr-2"></i> Karzinka (<span id="cartCount">0</span>)</span>
+            <span id="cartTotal" class="font-bold">0 so'm</span>
+        </button>
+    </div>
+
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        async function load() {
+        tg.ready();
+
+        let allProducts = [];
+        let cart = [];
+        let currentProduct = null;
+
+        // Ma'lumotlarni Render serveridan tortib olish
+        async function loadProducts() {
             try {
-                const res = await fetch('/api/products');
-                const products = await res.json();
-                const container = document.getElementById('products');
-                if (products.length === 0) {
-                    container.innerHTML = '<p>Hozircha mahsulot yo‘q</p>';
-                } else {
-                    container.innerHTML = products.map(p => `
-                        <div class="product">
-                            <img src="${p.img || 'https://via.placeholder.com/70'}" onerror="this.src='https://via.placeholder.com/70'">
-                            <div class="info">
-                                <div class="name">${escapeHtml(p.name)}</div>
-                                <div class="price">${Number(p.price).toLocaleString()} so'm</div>
-                            </div>
-                        </div>
-                    `).join('');
-                }
+                // Diqqat: Bu yerda o'zingizning Render ssilkangiz turishi kerak
+                const res = await fetch('https://omad-shop-1.onrender.com/api/products');
+                allProducts = await res.json();
+                renderProducts();
             } catch(e) {
-                document.getElementById('products').innerHTML = '<p>Server bilan bog‘lanib bo‘lmadi</p>';
+                document.getElementById('products-grid').innerHTML = '<p class="col-span-2 text-center text-red-500">Server bilan bog‘lanib bo‘lmadi.</p>';
             }
         }
-        function escapeHtml(str) {
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            if (allProducts.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 text-center text-gray-500 mt-10">Hozircha mahsulot yo‘q</p>';
+                return;
+            }
+            
+            grid.innerHTML = allProducts.map(p => `
+                <div class="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex flex-col" onclick="openModal(${p.id})">
+                    <img src="${p.img || 'https://via.placeholder.com/150'}" class="w-full h-32 object-contain rounded-xl bg-gray-50 mb-2">
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-gray-800 leading-tight mb-1 line-clamp-2">${escapeHtml(p.name)}</h3>
+                    </div>
+                    <div class="mt-2 text-blue-600 font-bold text-sm">${Number(p.price).toLocaleString()} so'm</div>
+                </div>
+            `).join('');
+        }
+
+        // Modal oynani ochish va yopish
+        function openModal(id) {
+            currentProduct = allProducts.find(p => p.id === id);
+            if (!currentProduct) return;
+
+            document.getElementById('modalImg').src = currentProduct.img || 'https://via.placeholder.com/150';
+            document.getElementById('modalTitle').innerText = currentProduct.name;
+            document.getElementById('modalPrice').innerText = Number(currentProduct.price).toLocaleString() + " so'm";
+            document.getElementById('modalDesc').innerText = currentProduct.description || "Tafsilotlar kiritilmagan.";
+            
+            const modal = document.getElementById('productModal');
+            const modalContainer = modal.querySelector('.modal-container');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => { modalContainer.classList.remove('translate-y-full'); }, 10);
+            document.body.classList.add('modal-active');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('productModal');
+            const modalContainer = modal.querySelector('.modal-container');
+            modalContainer.classList.add('translate-y-full');
+            setTimeout(() => { modal.classList.add('opacity-0', 'pointer-events-none'); }, 300);
+            document.body.classList.remove('modal-active');
+        }
+
+        // Karzinka mantiqi
+        function addToCartFromModal() {
+            if(currentProduct) {
+                cart.push(currentProduct);
+                updateCartUI();
+                closeModal();
+                tg.HapticFeedback.notificationOccurred('success'); // Vibratsiya
+            }
+        }
+
+        function updateCartUI() {
+            const btn = document.getElementById('mainCartBtn');
+            if (cart.length > 0) {
+                btn.classList.remove('hidden');
+                document.getElementById('cartCount').innerText = cart.length;
+                let total = cart.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+                document.getElementById('cartTotal').innerText = total.toLocaleString() + " so'm";
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        function openCart() {
+            // Bu yerda Click to'loviga o'tish yoki botga xabar yuborish mantiqi ishlaydi
+            tg.MainButton.text = "CLICK ORQALI TO'LASH";
+            tg.MainButton.show();
+            tg.onEvent('mainButtonClicked', function() {
+                tg.sendData(JSON.stringify({action: 'checkout', items: cart}));
             });
         }
-        load();
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[m]));
+        }
+
+        loadProducts();
     </script>
 </body>
 </html>
