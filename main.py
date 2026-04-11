@@ -13,22 +13,22 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import WebAppInfo
 import uuid
 
-# ========== KONFIGURATSIYA ==========
-API_TOKEN = "8353606263:AAFdwZSNdYmK5Qfaj8TAlmfj-RIG-JiuKpU"
-ADMIN_ID = 797324958   # O'z Telegram ID-raqamingizni yozing
-WEB_APP_URL = "https://omad-shop-1.onrender.com"   # Frontend URL (Render sizga beradi)
+# ==================== KONFIGURATSIYA ====================
+API_TOKEN = "8353606263:AAFdwZSNdYmK5Qfaj8TAlmfj-RIG-JiuKpU"   # Sizning yangi token
+ADMIN_ID = 797324958          # O‘z Telegram ID-raqamingizni yozing
+WEB_APP_URL = "https://omad-shop-1.onrender.com"   # Render URL (keyin o‘zgaradi)
 DATA_FILE = "products.json"
 STATIC_DIR = "static"
 
 os.makedirs(STATIC_DIR, exist_ok=True)
 
-# ========== GLOBAL ==========
+# ==================== GLOBAL ====================
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 lock = asyncio.Lock()
 session = None
 
-# ========== FSM ==========
+# ==================== FSM (qo‘lda qo‘shish) ====================
 class AddProductStates(StatesGroup):
     waiting_for_photo = State()
     waiting_for_name = State()
@@ -36,7 +36,7 @@ class AddProductStates(StatesGroup):
     waiting_for_description = State()
     waiting_for_category = State()
 
-# ========== YORDAMCHI FUNKSIYALAR ==========
+# ==================== YORDAMCHI FUNKSIYALAR ====================
 async def load_products():
     async with lock:
         if not os.path.exists(DATA_FILE):
@@ -96,7 +96,7 @@ async def get_uzum_info(url: str):
         print(f"Uzum parse xatosi: {e}")
         return None
 
-# ========== BOT HANDLERLAR ==========
+# ==================== TELEGRAM HANDLERLAR ====================
 @dp.message(CommandStart())
 async def start(message: types.Message):
     markup = types.ReplyKeyboardMarkup(
@@ -104,7 +104,7 @@ async def start(message: types.Message):
         resize_keyboard=True
     )
     await message.answer(
-        "🚗 AVTO6707 do'koniga xush kelibsiz!\n\nAdmin: Uzum linki yoki /addproduct buyrug'i bilan mahsulot qo'shing",
+        "Assalomu alaykum! Admin:\n• Uzum linki yuboring\n• Yoki /addproduct buyrug‘i bilan qo‘lda mahsulot qo‘shing",
         reply_markup=markup
     )
 
@@ -128,7 +128,7 @@ async def receive_photo(message: types.Message, state: FSMContext):
 @dp.message(AddProductStates.waiting_for_name, F.from_user.id == ADMIN_ID)
 async def receive_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text.strip())
-    await message.answer("💰 **Narxini** faqat raqamda yuboring (so'm):")
+    await message.answer("💰 **Narxini** faqat raqamda yuboring (so‘m):")
     await state.set_state(AddProductStates.waiting_for_price)
 
 @dp.message(AddProductStates.waiting_for_price, F.from_user.id == ADMIN_ID)
@@ -181,7 +181,7 @@ async def receive_category(message: types.Message, state: FSMContext):
     products.append(new_product)
     await save_products(products)
     await message.answer(
-        f"✅ Mahsulot qo'shildi!\n\n{new_product['name']}\n💰 {new_product['price']:,} so'm",
+        f"✅ Mahsulot qo‘shildi!\n\n{new_product['name']}\n💰 {new_product['price']:,} so'm",
         reply_markup=types.ReplyKeyboardRemove()
     )
     await state.clear()
@@ -217,13 +217,13 @@ async def handle_uzum_link(message: types.Message):
         await save_products(products)
         await message.answer_photo(
             photo=new_product['img'],
-            caption=f"✅ Uzumdan qo'shildi!\n\n{new_product['name']}\n💰 {new_product['price']:,} so'm"
+            caption=f"✅ Uzumdan qo‘shildi!\n\n{new_product['name']}\n💰 {new_product['price']:,} so'm"
         )
         await wait.delete()
     else:
         await wait.edit_text("❌ Uzumdan ma'lumot olinmadi.")
 
-# ========== API VA STATIC ==========
+# ==================== API VA STATIC HANDLERLAR ====================
 async def handle_api(request):
     products = await load_products()
     return web.json_response(products, headers={'Access-Control-Allow-Origin': '*'})
@@ -235,7 +235,7 @@ async def handle_static(request):
         return web.FileResponse(filepath)
     return web.Response(status=404)
 
-# ========== MAIN ==========
+# ==================== MAIN ====================
 async def main():
     global session, lock
     lock = asyncio.Lock()
