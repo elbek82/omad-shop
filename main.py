@@ -10,7 +10,7 @@ from aiogram.filters import CommandStart, Command
 
 # --- SOZLAMALAR ---
 API_TOKEN = '8353606263:AAHLPpnuv5wCEmGHJexg1PAYAQomKpny-PY' # Botfather bergan token
-ADMIN_ID = 797324958             # O'zingizning ID raqamingiz
+ADMIN_ID =797324958
 WEB_APP_URL = "https://omad-shop.vercel.app/" # Vercel-dagi sayt linki
 
 bot = Bot(token=API_TOKEN)
