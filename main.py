@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
+from aiogram.types import BufferedInputFile
 
 API_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
@@ -97,7 +98,6 @@ def extract_json_ld(soup):
             continue
     return None
 
-
 def extract_meta(soup):
     def get(prop):
         tag = soup.find("meta", property=prop) or soup.find("meta", attrs={"name": prop})
@@ -111,7 +111,6 @@ def extract_meta(soup):
 
     return {"name": name, "price": price, "img": img}
 
-
 async def parse_product(url):
     html = await fetch_html(url)
     if not html:
@@ -119,18 +118,15 @@ async def parse_product(url):
 
     soup = BeautifulSoup(html, "html.parser")
 
-    # 1. Uzum maxsus
     if "uzum.uz" in url:
         data = extract_uzum(soup)
         if data:
             return data
 
-    # 2. JSON-LD universal
     data = extract_json_ld(soup)
     if data and data.get("name"):
         return data
 
-    # 3. META fallback
     data = extract_meta(soup)
     if data.get("name"):
         return data
@@ -176,8 +172,9 @@ async def handle_link(message: types.Message):
         img_bytes = await download_image(product["img"]) if product.get("img") else None
 
         if img_bytes:
+            photo = BufferedInputFile(img_bytes, filename="product.jpg")
             await message.answer_photo(
-                photo=img_bytes,
+                photo=photo,
                 caption=f"✅ Qo‘shildi!\n\n{product['name']}\n💰 {product['price']}"
             )
         else:
@@ -194,7 +191,6 @@ async def handle_api(request):
     products = await load_products()
     return web.json_response(products)
 
-
 async def main():
     app = web.Application()
     app.router.add_get("/api/products", handle_api)
@@ -205,7 +201,6 @@ async def main():
     await site.start()
 
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     asyncio.run(main())
