@@ -2,22 +2,24 @@ import os
 import json
 import asyncio
 import re
-import uuid
 import aiohttp
 from bs4 import BeautifulSoup
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
-from aiogram.types import BufferedInputFile
+from aiogram.types import WebAppInfo
 
+# --- SOZLAMALAR ---
 API_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = int(os.getenv("ADMIN_ID", "797324958"))
+WEB_APP_URL = "https://omad-shop.vercel.app"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
-
 DATA_FILE = "products.json"
-LOCK = asyncio.Lock()
+
+# Lock obyektini main ichida yaratamiz (Globalda xato beradi)
+lock = None
 
 # ------------------ STORAGE ------------------
 async def load_products():
