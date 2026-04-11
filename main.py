@@ -16,7 +16,7 @@ WEB_APP_URL = "https://omad-shop.vercel.app"
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-# Mahsulotlarni saqlash funksiyalari
+# Mahsulotlarni saqlash va yuklash
 def load_products():
     if not os.path.exists('products.json'):
         return []
@@ -83,13 +83,13 @@ async def parser_handler(message: types.Message):
     else:
         await wait.edit_text("❌ Ma'lumotni olib bo'lmadi.")
 
-# --- SERVER QISMI (Sayt uchun API) ---
+# --- SERVER QISMI (API + CORS) ---
 async def handle_api(request):
-    products = load_products()
-    return web.json_response(products, headers={
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
+    data = load_products()
+    return web.json_response(data, headers={
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
     })
 
 async def main():
@@ -106,7 +106,8 @@ async def main():
     await site.start()
     print(f"API Server {port}-portda ishlamoqda...")
     
-    # Botni ishga tushirish
+    # Botni ishga tushirish (Conflict'ni oldini olish uchun)
+    await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
 if __name__ == '__main__':
